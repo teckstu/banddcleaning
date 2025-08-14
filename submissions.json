@@ -1,0 +1,47 @@
+[
+  {
+    "id": 1754718831647.948,
+    "name": "Test User",
+    "email": "test@example.com",
+    "phone": "",
+    "serviceType": "house-cleaning",
+    "preferredDate": "",
+    "frequency": "one-time",
+    "address": "",
+    "message": "Test message",
+    "submittedAt": "2025-08-09T05:53:51.647Z",
+    "status": "new",
+    "archived": false,
+    "notes": ""
+  },
+  {
+    "id": 1754719216980.4456,
+    "name": "Test User",
+    "email": "test@example.com",
+    "phone": "",
+    "serviceType": "house-cleaning",
+    "preferredDate": "",
+    "frequency": "one-time",
+    "address": "",
+    "message": "Test message",
+    "submittedAt": "2025-08-09T06:00:16.980Z",
+    "status": "new",
+    "archived": false,
+    "notes": ""
+  },
+  {
+    "id": "4fb1d5c1-ce04-4878-8bdd-694aad7b5ff0",
+    "name": "Test User",
+    "email": "test@example.com",
+    "phone": "",
+    "serviceType": "residential-regular",
+    "preferredDate": "",
+    "frequency": "one-time",
+    "address": "",
+    "message": "This is a test message.",
+    "submittedAt": "2025-08-09T07:14:14.740Z",
+    "status": "new",
+    "archived": false,
+    "notes": ""
+  }
+]

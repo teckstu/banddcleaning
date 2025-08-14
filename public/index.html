@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>B & D Cleaning Co</title>
+  <style>
+    /* Reset */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Arial', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #333;
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    header {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+    }
+
+    .header-content {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 2rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .logo-container {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .logo {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 1.5rem;
+      font-weight: bold;
+      border: 3px solid #667eea;
+    }
+
+    .logo-text h1 {
+      color: #667eea;
+      font-size: 1.8rem;
+      margin-bottom: 0.2rem;
+    }
+
+    .logo-text p {
+      color: #666;
+      font-size: 0.9rem;
+    }
+
+    nav ul {
+      display: flex;
+      list-style: none;
+      gap: 2rem;
+    }
+
+    nav li:focus-within {
+      outline: 2px solid #667eea;
+      outline-offset: 2px;
+    }
+
+    nav a {
+      text-decoration: none;
+      color: #667eea;
+      font-weight: 600;
+      padding: 0.5rem 1rem;
+      border-radius: 25px;
+      transition: all 0.3s ease;
+    }
+
+    nav a:hover,
+    nav a:focus {
+      background: #667eea;
+      color: white;
+      transform: translateY(-2px);
+      outline: none;
+    }
+
+    main {
+      margin-top: 100px;
+      padding: 2rem 0;
+    }
+
+    .hero {
+      text-align: center;
+      padding: 4rem 0;
+      color: white;
+    }
+
+    .hero h2 {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    }
+
+    .hero p {
+      font-size: 1.2rem;
+      margin-bottom: 2rem;
+      opacity: 0.9;
+    }
+
+    .cta-button {
+      display: inline-block;
+      background: white;
+      color: #667eea;
+      padding: 1rem 2rem;
+      text-decoration: none;
+      border-radius: 50px;
+      font-weight: bold;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+      transition: all 0.3s ease;
+    }
+
+    .cta-button:hover,
+    .cta-button:focus {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+      outline: none;
+    }
+
+    /* Services Section */
+    .services {
+      background: white;
+      padding: 4rem 0;
+      margin: 2rem 0;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+
+    .services h2 {
+      text-align: center;
+      color: #667eea;
+      margin-bottom: 1rem;
+    }
+
+    .services > p {
+      text-align: center;
+      color: #666;
+      margin-bottom: 2rem;
+    }
+
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+      margin-top: 3rem;
+    }
+
+    .service-card {
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      color: white;
+      padding: 2rem;
+      border-radius: 15px;
+      text-align: center;
+      transition: transform 0.3s ease;
+    }
+
+    .service-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .service-card h3 {
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+    }
+
+    /* Quote Form */
+    .quote-section {
+      background: rgba(255, 255, 255, 0.95);
+      padding: 3rem;
+      border-radius: 20px;
+      margin: 2rem 0;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+
+    .quote-section h2 {
+      text-align: center;
+      color: #667eea;
+      margin-bottom: 1rem;
+    }
+
+    .quote-section > p {
+      text-align: center;
+      color: #666;
+      margin-bottom: 2rem;
+    }
+
+    .quote-form {
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      color: #333;
+      font-weight: 600;
+    }
+
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+      width: 100%;
+      padding: 1rem;
+      border: 2px solid #e1e8ed;
+      border-radius: 10px;
+      font-size: 1rem;
+      transition: border-color 0.3s ease;
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    .submit-btn {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      padding: 1rem 2rem;
+      font-size: 1.1rem;
+      font-weight: bold;
+      border-radius: 50px;
+      cursor: pointer;
+      width: 100%;
+      transition: all 0.3s ease;
+    }
+
+    .submit-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    }
+
+    .submit-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* Response Message */
+    .response-message {
+      margin-top: 1rem;
+      padding: 1rem;
+      border-radius: 10px;
+      text-align: center;
+      font-weight: bold;
+      display: none;
+    }
+
+    .response-message.success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+
+    .response-message.error {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+
+    /* Contact Info */
+    .contact-info {
+      background: rgba(255, 255, 255, 0.95);
+      padding: 2rem;
+      border-radius: 20px;
+      margin: 2rem 0;
+      text-align: center;
+    }
+
+    .contact-info h2 {
+      color: #667eea;
+      margin-bottom: 1rem;
+    }
+
+    .contact-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 2rem;
+      margin-top: 2rem;
+    }
+
+    .contact-item {
+      padding: 1rem;
+    }
+
+    .contact-item h3 {
+      color: #667eea;
+      margin-bottom: 0.5rem;
+    }
+
+    /* Footer */
+    footer {
+      background: rgba(0, 0, 0, 0.8);
+      color: white;
+      text-align: center;
+      padding: 2rem 0;
+      margin-top: 2rem;
+    }
+
+    /* Spinner for loading */
+    .spinner {
+      border: 3px solid #f3f3f3;
+      border-top: 3px solid #667eea;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      animation: spin 1s linear infinite;
+      display: inline-block;
+      margin-right: 10px;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .header-content {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      .hero h2 {
+        font-size: 2rem;
+      }
+
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+
+      .services-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="container">
+    <div class="header-content">
+      <div class="logo-container">
+        <div class="logo">B&D</div>
+        <div class="logo-text">
+          <h1>B & D Cleaning</h1>
+          <p>Professional Cleaning Services</p>
+        </div>
+      </div>
+      <nav>
+        <ul>
+          <li><a href="#services">Services</a></li>
+          <li><a href="#quote">Get Quote</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="container">
+      <h2>Premium Cleaning Services</h2>
+      <p>Professional, reliable, and thorough cleaning for your home and business</p>
+      <a href="#quote" class="cta-button">Get Your Free Quote</a>
+    </div>
+  </section>
+
+  <!-- Services Section -->
+  <section id="services" class="container">
+    <div class="services">
+      <h2>Our Services</h2>
+      <p>We provide comprehensive cleaning solutions tailored to your specific needs</p>
+      
+      <div class="services-grid">
+        <div class="service-card">
+          <h3>🏠 Residential Cleaning</h3>
+          <p>Regular house cleaning, deep cleaning, move-in/move-out cleaning, and post-construction cleanup</p>
+        </div>
+        <div class="service-card">
+          <h3>🏢 Commercial Cleaning</h3>
+          <p>Office cleaning, retail spaces, medical facilities, and industrial cleaning services</p>
+        </div>
+        <div class="service-card">
+          <h3>🧽 Specialized Services</h3>
+          <p>Carpet cleaning, window cleaning, pressure washing, and sanitization services</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Quote Form Section -->
+  <section id="quote" class="container">
+    <div class="quote-section">
+      <h2>Request Your Free Quote</h2>
+      <p>Fill out the form below and we'll get back to you within 24 hours</p>
+      
+      <form id="quoteForm" class="quote-form">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="name">Full Name *</label>
+            <input type="text" id="name" name="name" required />
+          </div>
+          <div class="form-group">
+            <label for="email">Email Address *</label>
+            <input type="email" id="email" name="email" required />
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="phone">Phone Number</label>
+            <input type="tel" id="phone" name="phone" />
+          </div>
+          <div class="form-group">
+            <label for="serviceType">Service Type *</label>
+            <select id="serviceType" name="serviceType" required>
+              <option value="">Select a service</option>
+              <option value="residential-regular">Residential - Regular Cleaning</option>
+              <option value="residential-deep">Residential - Deep Cleaning</option>
+              <option value="residential-moveout">Residential - Move In/Out</option>
+              <option value="commercial-office">Commercial - Office</option>
+              <option value="commercial-retail">Commercial - Retail</option>
+              <option value="specialized-carpet">Specialized - Carpet Cleaning</option>
+              <option value="specialized-windows">Specialized - Window Cleaning</option>
+              <option value="other">Other (please specify in message)</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="preferredDate">Preferred Date</label>
+            <input type="date" id="preferredDate" name="preferredDate" min="" />
+          </div>
+          <div class="form-group">
+            <label for="frequency">Frequency</label>
+            <select id="frequency" name="frequency">
+              <option value="one-time">One-time service</option>
+              <option value="weekly">Weekly</option>
+              <option value="bi-weekly">Bi-weekly</option>
+              <option value="monthly">Monthly</option>
+              <option value="quarterly">Quarterly</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="address">Property Address</label>
+          <input type="text" id="address" name="address" placeholder="Street address, city, state, zip" />
+        </div>
+        
+        <div class="form-group">
+          <label for="message">Additional Details *</label>
+          <textarea
+            id="message"
+            name="message"
+            rows="5"
+            placeholder="Please describe the size of the property, specific cleaning requirements, and any other details that would help us provide an accurate quote..."
+            required
+          ></textarea>
+        </div>
+
+        <button type="submit" class="submit-btn" id="submitBtn">
+          <span id="submitText">Get My Free Quote</span>
+        </button>
+
+        <div id="responseMessage" class="response-message"></div>
+      </form>
+    </div>
+  </section>
+
+  <!-- Contact Information Section -->
+  <section id="contact" class="container">
+    <div class="contact-info">
+      <h2>Contact Us</h2>
+      <p>Ready to get started? Get in touch with us today!</p>
+      
+      <div class="contact-grid">
+        <div class="contact-item">
+          <h3>📧 Email</h3>
+          <p>info@bndcleaning.com</p>
+        </div>
+        <div class="contact-item">
+          <h3>📞 Phone</h3>
+          <p>(555) 123-4567</p>
+        </div>
+        <div class="contact-item">
+          <h3>📍 Service Area</h3>
+          <p>Local area and surrounding communities</p>
+        </div>
+        <div class="contact-item">
+          <h3>🕒 Hours</h3>
+          <p>Mon-Fri: 8AM-6PM<br>Sat: 9AM-4PM</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="container">
+    <p>&copy; 2025 B & D Cleaning Services. All rights reserved. | Professional cleaning you can trust.</p>
+  </div>
+</footer>
+
+<script>
+  // Set minimum date to today
+  document.getElementById('preferredDate').min = new Date().toISOString().split('T')[0];
+
+  // Smooth scrolling for navigation
+  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+      e.preventDefault();
+      const target = document.querySelector(this.getAttribute('href'));
+      if (target) {
+        target.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start'
+        });
+      }
+    });
+  });
+
+  // Form submission handler
+  document.getElementById("quoteForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const submitBtn = document.getElementById('submitBtn');
+    const submitText = document.getElementById('submitText');
+    const responseMessage = document.getElementById('responseMessage');
+
+    // Show loading state
+    submitBtn.disabled = true;
+    submitText.innerHTML = '<div class="spinner"></div>Sending Request...';
+    responseMessage.style.display = 'none';
+
+    const form = e.target;
+
+    const formData = {
+      name: form.name.value.trim(),
+      email: form.email.value.trim(),
+      phone: form.phone.value.trim(),
+      serviceType: form.serviceType.value,
+      preferredDate: form.preferredDate.value,
+      frequency: form.frequency.value,
+      address: form.address.value.trim(),
+      message: form.message.value.trim(),
+    };
+
+    // Basic client-side validation
+    if (!formData.name || !formData.email || !formData.serviceType || !formData.message) {
+      responseMessage.className = 'response-message error';
+      responseMessage.textContent = 'Please fill in all required fields.';
+      responseMessage.style.display = 'block';
+      submitBtn.disabled = false;
+      submitText.textContent = 'Get My Free Quote';
+      return;
+    }
+
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      responseMessage.className = 'response-message error';
+      responseMessage.textContent = 'Please enter a valid email address.';
+      responseMessage.style.display = 'block';
+      submitBtn.disabled = false;
+      submitText.textContent = 'Get My Free Quote';
+      return;
+    }
+
+    try {
+      const response = await fetch('/api/submit', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(formData)
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        responseMessage.className = 'response-message success';
+        responseMessage.textContent = data.message || 'Your quote request has been submitted successfully! We will contact you within 24 hours.';
+        form.reset();
+        
+        // Reset minimum date
+        document.getElementById('preferredDate').min = new Date().toISOString().split('T')[0];
+      } else {
+        throw new Error(data.error || 'Something went wrong, please try again.');
+      }
+    } catch (error) {
+      console.error('Form submission error:', error);
+      responseMessage.className = 'response-message error';
+      responseMessage.textContent = error.message || 'Network error. Please check your connection and try again.';
+    } finally {
+      responseMessage.style.display = 'block';
+      submitBtn.disabled = false;
+      submitText.textContent = 'Get My Free Quote';
+    }
+  });
+</script>
+
+</body>
+</html>

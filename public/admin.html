@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' fonts.googleapis.com; img-src 'self' data:; font-src 'self' fonts.gstatic.com; connect-src 'self'">
+  <title>B&D Cleaning - Admin Dashboard</title>
+  <style>
+    /* Reset */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Arial', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #333;
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    /* Header matching index.html */
+    header {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+    }
+
+    .header-content {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 2rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .logo-container {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .logo {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 1.5rem;
+      font-weight: bold;
+      border: 3px solid #667eea;
+    }
+
+    .logo-text h1 {
+      color: #667eea;
+      font-size: 1.8rem;
+      margin-bottom: 0.2rem;
+    }
+
+    .logo-text p {
+      color: #666;
+      font-size: 0.9rem;
+    }
+
+    .admin-controls {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .admin-badge {
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      color: white;
+      padding: 0.5rem 1rem;
+      border-radius: 25px;
+      font-weight: bold;
+      font-size: 0.9rem;
+    }
+
+    .logout-btn {
+      background: #667eea;
+      color: white;
+      border: none;
+      padding: 0.7rem 1.5rem;
+      border-radius: 25px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .logout-btn:hover,
+    .logout-btn:focus {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+      outline: none;
+    }
+
+    /* Main content area */
+    main {
+      margin-top: 120px;
+      padding: 2rem 0;
+    }
+
+    .dashboard-header {
+      text-align: center;
+      padding: 2rem 0 3rem 0;
+      color: white;
+    }
+
+    .dashboard-header h2 {
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    }
+
+    .dashboard-header p {
+      font-size: 1.1rem;
+      opacity: 0.9;
+    }
+
+    /* Stats Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 2rem;
+      margin-bottom: 3rem;
+    }
+
+    .stat-card {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      padding: 2rem;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      text-align: center;
+      transition: transform 0.3s ease;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .stat-number {
+      font-size: 3rem;
+      font-weight: bold;
+      color: #667eea;
+      margin-bottom: 0.5rem;
+    }
+
+    .stat-label {
+      color: #666;
+      font-size: 1.1rem;
+      font-weight: 600;
+    }
+
+    /* Content sections */
+    .admin-section {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      padding: 3rem;
+      border-radius: 20px;
+      margin: 2rem 0;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+
+    .admin-section h3 {
+      color: #667eea;
+      font-size: 1.8rem;
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+
+    .admin-section > p {
+      text-align: center;
+      color: #666;
+      margin-bottom: 2rem;
+    }
+
+    /* Submissions table */
+    .submissions-container {
+      overflow-x: auto;
+      margin-top: 2rem;
+    }
+
+    .submissions-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+
+    .submissions-table th {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 1rem;
+      text-align: left;
+      font-weight: 600;
+    }
+
+    .submissions-table td {
+      padding: 1rem;
+      border-bottom: 1px solid #eee;
+    }
+
+    .submissions-table tbody tr:hover {
+      background: #f8f9fa;
+    }
+
+    .submissions-table tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    .status-badge {
+      padding: 0.3rem 0.8rem;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      font-weight: bold;
+      text-transform: capitalize;
+    }
+
+    .status-new {
+      background: #d4edda;
+      color: #155724;
+    }
+
+    .status-contacted {
+      background: #d1ecf1;
+      color: #0c5460;
+    }
+
+    .status-completed {
+      background: #f8d7da;
+      color: #721c24;
+    }
+
+    /* Action buttons */
+    .action-btn {
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-right: 0.5rem;
+    }
+
+    .action-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(240, 147, 251, 0.4);
+    }
+
+    .action-btn.secondary {
+      background: #667eea;
+    }
+
+    .action-btn.secondary:hover {
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+
+    /* Audit Log */
+    .audit-log {
+      background: #f8f9fa;
+      border-radius: 15px;
+      padding: 2rem;
+      margin-top: 2rem;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    .audit-log h4 {
+      color: #667eea;
+      margin-bottom: 1rem;
+      font-size: 1.3rem;
+    }
+
+    .log-entry {
+      padding: 1rem;
+      border-bottom: 1px solid #dee2e6;
+      font-family: 'Courier New', monospace;
+      font-size: 0.9rem;
+      background: white;
+      border-radius: 8px;
+      margin-bottom: 0.5rem;
+      transition: background 0.2s ease;
+    }
+
+    .log-entry:hover {
+      background: #e9ecef;
+    }
+
+    .log-entry:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+    }
+
+    .log-timestamp {
+      color: #667eea;
+      font-weight: bold;
+    }
+
+    .log-user {
+      color: #f5576c;
+      font-weight: bold;
+    }
+
+    .log-action {
+      color: #333;
+    }
+
+    /* Loading states */
+    .loading {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 3rem;
+      color: #667eea;
+    }
+
+    .spinner {
+      border: 3px solid #f3f3f3;
+      border-top: 3px solid #667eea;
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      animation: spin 1s linear infinite;
+      margin-right: 1rem;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Alerts */
+    .alert {
+      padding: 1rem 1.5rem;
+      border-radius: 15px;
+      margin: 1rem 0;
+      font-weight: 600;
+    }
+
+    .alert.success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+
+    .alert.error {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+
+    .alert.info {
+      background: #d1ecf1;
+      color: #0c5460;
+      border: 1px solid #bee5eb;
+    }
+
+    /* Empty states */
+    .empty-state {
+      text-align: center;
+      padding: 3rem;
+      color: #666;
+    }
+
+    .empty-state h4 {
+      color: #667eea;
+      margin-bottom: 1rem;
+    }
+
+    /* Footer */
+    footer {
+      background: rgba(0, 0, 0, 0.8);
+      color: white;
+      text-align: center;
+      padding: 2rem 0;
+      margin-top: 3rem;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .header-content {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      .dashboard-header h2 {
+        font-size: 2rem;
+      }
+
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .admin-section {
+        padding: 2rem 1rem;
+      }
+
+      .submissions-table {
+        font-size: 0.9rem;
+      }
+
+      .submissions-table th,
+      .submissions-table td {
+        padding: 0.5rem;
+      }
+    }
+
+    /* Hide elements initially */
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="container">
+    <div class="header-content">
+      <div class="logo-container">
+        <div class="logo">B&D</div>
+        <div class="logo-text">
+          <h1>B & D Cleaning</h1>
+          <p>Admin Dashboard</p>
+        </div>
+      </div>
+      <div class="admin-controls">
+        <div class="admin-badge">Administrator</div>
+        <button id="logoutBtn" class="logout-btn">Logout</button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="container">
+    <!-- Dashboard Header -->
+    <section class="dashboard-header">
+      <h2>Admin Dashboard</h2>
+      <p>Manage quote requests and monitor system activity</p>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-number" id="totalSubmissions">-</div>
+        <div class="stat-label">Total Submissions</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="newSubmissions">-</div>
+        <div class="stat-label">New This Week</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="pendingSubmissions">-</div>
+        <div class="stat-label">Pending Review</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="completedSubmissions">-</div>
+        <div class="stat-label">Completed</div>
+      </div>
+    </section>
+
+    <!-- Quote Submissions Section -->
+    <section class="admin-section">
+      <h3>Quote Submissions</h3>
+      <p>Manage and respond to customer quote requests</p>
+      
+      <div id="submissionsContent">
+        <div class="loading">
+          <div class="spinner"></div>
+          Loading submissions...
+        </div>
+      </div>
+    </section>
+
+    <!-- Activity Log Section -->
+    <section class="admin-section">
+      <h3>System Activity</h3>
+      <p>Monitor recent system activity and user actions</p>
+      
+      <div class="audit-log">
+        <h4>Recent Activity</h4>
+        <div id="auditLogContent">
+          <div class="loading">
+            <div class="spinner"></div>
+            Loading activity log...
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</main>
+
+<footer>
+  <div class="container">
+    <p>&copy; 2025 B & D Cleaning Services - Admin Portal. All rights reserved.</p>
+  </div>
+</footer>
+
+<script>
+  // Mock data for demonstration (replace with actual API calls)
+  const mockStats = {
+    total: 127,
+    newThisWeek: 23,
+    pending: 15,
+    completed: 89
+  };
+
+  const mockSubmissions = [
+    {
+      id: 1,
+      name: "Sarah Johnson",
+      email: "sarah.j@email.com",
+      phone: "(555) 123-4567",
+      service: "Residential Deep Cleaning",
+      date: "2025-08-15",
+      status: "new",
+      message: "3 bedroom house, 2 bathrooms, kitchen deep clean needed",
+      submitted: "2025-08-14T10:30:00"
+    },
+    {
+      id: 2,
+      name: "Mike Chen",
+      email: "mchen@company.com",
+      phone: "(555) 987-6543",
+      service: "Commercial Office",
+      date: "2025-08-20",
+      status: "contacted",
+      message: "Weekly office cleaning for 15-person team, 3000 sq ft",
+      submitted: "2025-08-13T14:15:00"
+    },
+    {
+      id: 3,
+      name: "Lisa Davis",
+      email: "lisa.davis@email.com",
+      phone: "(555) 456-7890",
+      service: "Move Out Cleaning",
+      date: "2025-08-18",
+      status: "completed",
+      message: "Full move-out cleaning for 2br apartment, end of lease",
+      submitted: "2025-08-12T09:20:00"
+    }
+  ];
+
+  const mockAuditLog = [
+    {
+      timestamp: "2025-08-14T15:30:22",
+      user: "admin@bndcleaning.com",
+      action: "updated quote status",
+      entity: "Quote #127",
+      changes: { status: "contacted" }
+    },
+    {
+      timestamp: "2025-08-14T14:15:10",
+      user: "system",
+      action: "new quote submitted",
+      entity: "Quote #127"
+    },
+    {
+      timestamp: "2025-08-14T12:45:33",
+      user: "admin@bndcleaning.com",
+      action: "logged in",
+      entity: "admin panel"
+    },
+    {
+      timestamp: "2025-08-14T11:20:15",
+      user: "admin@bndcleaning.com",
+      action: "exported data",
+      entity: "submissions report"
+    }
+  ];
+
+  // Initialize dashboard
+  document.addEventListener('DOMContentLoaded', function() {
+    initAdminDashboard();
+  });
+
+  function initAdminDashboard() {
+    if (!checkAuth()) return;
+    
+    // Load all dashboard data
+    Promise.allSettled([
+      loadStats(),
+      loadSubmissions(),
+      loadAuditLog()
+    ]).then(results => {
+      const errors = results.filter(r => r.status === 'rejected');
+      if (errors.length) {
+        showAlert(`${errors.length} components failed to load`, 'error');
+      }
+    });
+  }
+
+  // Mock authentication check
+  function checkAuth() {
+    // In a real app, this would verify the session/token
+    return true; // Simulate authenticated user
+  }
+
+  // Load dashboard statistics
+  async function loadStats() {
+    try {
+      // Simulate API delay
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      // Update stats display
+      document.getElementById('totalSubmissions').textContent = mockStats.total;
+      document.getElementById('newSubmissions').textContent = mockStats.newThisWeek;
+      document.getElementById('pendingSubmissions').textContent = mockStats.pending;
+      document.getElementById('completedSubmissions').textContent = mockStats.completed;
+      
+    } catch (error) {
+      console.error('Stats loading error:', error);
+      throw error;
+    }
+  }
+
+  // Load submissions
+  async function loadSubmissions() {
+    try {
+      // Simulate API delay
+      await new Promise(resolve => setTimeout(resolve, 800));
+      
+      renderSubmissions(mockSubmissions);
+      
+    } catch (error) {
+      console.error('Submissions loading error:', error);
+      document.getElementById('submissionsContent').innerHTML = 
+        '<div class="alert error">Failed to load submissions. Please refresh the page.</div>';
+      throw error;
+    }
+  }
+
+  // Render submissions table
+  function renderSubmissions(submissions) {
+    const container = document.getElementById('submissionsContent');
+    
+    if (submissions.length === 0) {
+      container.innerHTML = `
+        <div class="empty-state">
+          <h4>No Submissions Found</h4>
+          <p>No quote requests have been submitted yet.</p>
+        </div>
+      `;
+      return;
+    }
+
+    const tableHTML = `
+      <div class="submissions-container">
+        <table class="submissions-table">
+          <thead>
+            <tr>
+              <th>Customer</th>
+              <th>Service</th>
+              <th>Preferred Date</th>
+              <th>Status</th>
+              <th>Submitted</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${submissions.map(submission => `
+              <tr>
+                <td>
+                  <strong>${submission.name}</strong><br>
+                  <small>${submission.email}</small><br>
+                  <small>${submission.phone}</small>
+                </td>
+                <td>${submission.service}</td>
+                <td>${new Date(submission.date).toLocaleDateString()}</td>
+                <td><span class="status-badge status-${submission.status}">${submission.status}</span></td>
+                <td>${new Date(submission.submitted).toLocaleDateString()}</td>
+                <td>
+                  <button class="action-btn" onclick="viewSubmission(${submission.id})">View</button>
+                  <button class="action-btn secondary" onclick="updateStatus(${submission.id})">Update</button>
+                </td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      </div>
+    `;
+    
+    container.innerHTML = tableHTML;
+  }
+
+  // Load audit log
+  async function loadAuditLog() {
+    try {
+      // Simulate API delay
+      await new Promise(resolve => setTimeout(resolve, 600));
+      
+      renderAuditLog(mockAuditLog);
+      
+    } catch (error) {
+      console.error('Audit log error:', error);
+      document.getElementById('auditLogContent').innerHTML = 
+        '<div class="alert error">Failed to load activity log.</div>';
+      throw error;
+    }
+  }
+
+  // Render audit log
+  function renderAuditLog(logs) {
+    const container = document.getElementById('auditLogContent');
+    
+    if (logs.length === 0) {
+      container.innerHTML = '<div class="empty-state"><p>No recent activity</p></div>';
+      return;
+    }
+
+    container.innerHTML = logs.map(log => `
+      <div class="log-entry">
+        <span class="log-timestamp">[${new Date(log.timestamp).toLocaleString()}]</span>
+        <span class="log-user">${log.user}</span>
+        <span class="log-action">${log.action}</span>
+        ${log.entity ? `<strong>${log.entity}</strong>` : ''}
+        ${log.changes ? `<em>(${JSON.stringify(log.changes)})</em>` : ''}
+      </div>
+    `).join('');
+  }
+
+  // Mock functions for demonstration
+  function viewSubmission(id) {
+    const submission = mockSubmissions.find(s => s.id === id);
+    if (submission) {
+      alert(`Viewing submission from ${submission.name}\n\nMessage: ${submission.message}\n\nService: ${submission.service}`);
+    }
+  }
+
+  function updateStatus(id) {
+    const newStatus = prompt('Enter new status (new, contacted, completed):');
+    if (newStatus && ['new', 'contacted', 'completed'].includes(newStatus)) {
+      const submission = mockSubmissions.find(s => s.id === id);
+      if (submission) {
+        submission.status = newStatus;
+        renderSubmissions(mockSubmissions);
+        showAlert(`Status updated for ${submission.name}`, 'success');
+      }
+    }
+  }
+
+  // Show alert messages
+  function showAlert(message, type) {
+    const alert = document.createElement('div');
+    alert.className = `alert ${type}`;
+    alert.textContent = message;
+    
+    document.querySelector('main .container').insertBefore(alert, document.querySelector('.dashboard-header'));
+    
+    setTimeout(() => {
+      alert.remove();
+    }, 5000);
+  }
+
+  // Logout functionality
+  async function logout() {
+    try {
+      // In a real app, make API call to invalidate session
+      await fetch('/api/auth/logout', {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Authorization': `Bearer ${sessionStorage.getItem('authToken')}`
+        }
+      });
+    } finally {
+      // Clear client-side storage
+      sessionStorage.clear();
+      localStorage.clear();
+      window.location.href = '/login';
+    }
+  }
+
+  // Event listeners
+  document.getElementById('logoutBtn').addEventListener('click', logout);
+</script>
+
+</body>
+</html>

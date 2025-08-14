@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <meta name="description" content="B&D Cleaning Admin Login">
+  <title>B&D Cleaning - Admin Login</title>
+  <style>
+    /* Reset */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Arial', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #333;
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .container {
+      max-width: 500px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    .login-container {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      padding: 3rem;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      text-align: center;
+    }
+
+    .logo-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+      margin-bottom: 2rem;
+    }
+
+    .logo {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 1.5rem;
+      font-weight: bold;
+      border: 3px solid #667eea;
+    }
+
+    .logo-text h1 {
+      color: #667eea;
+      font-size: 1.8rem;
+      margin-bottom: 0.2rem;
+    }
+
+    .logo-text p {
+      color: #666;
+      font-size: 0.9rem;
+    }
+
+    .login-header h2 {
+      color: #667eea;
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .login-header p {
+      color: #666;
+      margin-bottom: 2rem;
+      font-size: 1.1rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+      text-align: left;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      color: #333;
+      font-weight: 600;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 1rem;
+      border: 2px solid #e1e8ed;
+      border-radius: 10px;
+      font-size: 1rem;
+      transition: border-color 0.3s ease;
+    }
+
+    .form-group input:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .password-container {
+      position: relative;
+    }
+
+    .toggle-password {
+      position: absolute;
+      right: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 1.2rem;
+      color: #666;
+      padding: 5px;
+    }
+
+    .toggle-password:hover {
+      color: #667eea;
+    }
+
+    .login-btn {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      padding: 1rem 2rem;
+      font-size: 1.1rem;
+      font-weight: bold;
+      border-radius: 50px;
+      cursor: pointer;
+      width: 100%;
+      transition: all 0.3s ease;
+      margin-top: 1rem;
+    }
+
+    .login-btn:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    }
+
+    .login-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* Alert Messages */
+    .alert {
+      margin-top: 1rem;
+      padding: 1rem;
+      border-radius: 10px;
+      text-align: center;
+      font-weight: bold;
+      display: none;
+    }
+
+    .alert.success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+
+    .alert.error {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+
+    /* Spinner for loading */
+    .spinner {
+      border: 3px solid #f3f3f3;
+      border-top: 3px solid #667eea;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      animation: spin 1s linear infinite;
+      display: inline-block;
+      margin-right: 10px;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .back-link {
+      display: inline-block;
+      margin-top: 2rem;
+      color: #667eea;
+      text-decoration: none;
+      font-weight: 600;
+      padding: 0.5rem 1rem;
+      border-radius: 25px;
+      transition: all 0.3s ease;
+    }
+
+    .back-link:hover {
+      background: rgba(102, 126, 234, 0.1);
+      transform: translateY(-2px);
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .container {
+        padding: 0 15px;
+      }
+      
+      .login-container {
+        padding: 2rem 1.5rem;
+        margin: 1rem 0;
+      }
+      
+      .logo-container {
+        flex-direction: column;
+        gap: 10px;
+      }
+      
+      .login-header h2 {
+        font-size: 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="login-container">
+      <div class="logo-container">
+        <div class="logo">B&D</div>
+        <div class="logo-text">
+          <h1>B & D Cleaning</h1>
+          <p>Professional Cleaning Services</p>
+        </div>
+      </div>
+      
+      <div class="login-header">
+        <h2>Admin Login</h2>
+        <p>Access your dashboard to manage quotes and customers</p>
+      </div>
+      
+      <form id="loginForm">
+        <div class="form-group">
+          <label for="email">Email Address</label>
+          <input type="email" id="email" name="email" required />
+        </div>
+        
+        <div class="form-group">
+          <label for="password">Password</label>
+          <div class="password-container">
+            <input type="password" id="password" name="password" required />
+            <button type="button" class="toggle-password">👁️</button>
+          </div>
+        </div>
+        
+        <button type="submit" class="login-btn" id="loginBtn">
+          Login to Dashboard
+        </button>
+        
+        <div id="alertMessage" class="alert"></div>
+      </form>
+      
+      <a href="/" class="back-link">← Back to Homepage</a>
+    </div>
+  </div>
+
+  <script>
+    const API_BASE = '';
+
+    // Generate CSRF token
+    function generateCSRFToken() {
+      return crypto.randomUUID() || Math.random().toString(36).substring(2, 15);
+    }
+
+    // Store CSRF token in session storage
+    const csrfToken = generateCSRFToken();
+    sessionStorage.setItem('csrfToken', csrfToken);
+
+    // Show alert function
+    function showAlert(message, type) {
+      const alertMessage = document.getElementById('alertMessage');
+      alertMessage.className = `alert ${type}`;
+      alertMessage.textContent = message;
+      alertMessage.style.display = 'block';
+      
+      // Auto-hide after 5 seconds for success messages
+      if (type === 'success') {
+        setTimeout(() => {
+          alertMessage.style.display = 'none';
+        }, 5000);
+      }
+    }
+
+    // Enhanced authenticate function
+    async function authenticate(email, password) {
+      try {
+        const response = await fetch(`${API_BASE}/api/auth/login`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-Token': csrfToken
+          },
+          credentials: 'include', // For httpOnly cookies
+          body: JSON.stringify({ email, password })
+        });
+
+        if (!response.ok) {
+          const error = await response.json();
+          throw new Error(error.message || 'Authentication failed');
+        }
+
+        return await response.json();
+      } catch (error) {
+        console.error('Authentication error:', error);
+        throw error;
+      }
+    }
+
+    // Enhanced form submission
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+      const loginBtn = document.getElementById('loginBtn');
+      
+      // Validation
+      if (!email || !password) {
+        showAlert('Please enter both email and password', 'error');
+        return;
+      }
+
+      // Email format validation
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        showAlert('Please enter a valid email address', 'error');
+        return;
+      }
+
+      try {
+        loginBtn.disabled = true;
+        loginBtn.innerHTML = '<span class="spinner"></span> Authenticating...';
+        
+        const data = await authenticate(email, password);
+        
+        // Store minimal user data in session storage
+        sessionStorage.setItem('authToken', data.token);
+        sessionStorage.setItem('userEmail', email);
+        
+        showAlert('Login successful! Redirecting...', 'success');
+        setTimeout(() => {
+          window.location.href = '/admin';
+        }, 1000);
+      } catch (error) {
+        showAlert(error.message || 'Login failed. Please try again.', 'error');
+      } finally {
+        loginBtn.disabled = false;
+        loginBtn.textContent = 'Login to Dashboard';
+      }
+    });
+
+    // Password visibility toggle
+    document.querySelector('.toggle-password').addEventListener('click', (e) => {
+      const passwordInput = document.getElementById('password');
+      const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+      passwordInput.setAttribute('type', type);
+      e.target.textContent = type === 'password' ? '👁️' : '👁️‍🗨️';
+    });
+  </script>
+</body>
+</html>
