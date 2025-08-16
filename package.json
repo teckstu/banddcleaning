@@ -6,6 +6,8 @@
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js",
+    "admin": "node admin-manager.js",
+    "admin-setup": "node admin-manager.js",
     "security-check": "npm audit && npx cyclonedx-npm ."
   },
   "dependencies": {
