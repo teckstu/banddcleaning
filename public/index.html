@@ -1,382 +1,386 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>B & D Cleaning Co</title>
-  <style>
-    /* Reset */
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>B&D Cleaning Co - Professional Cleaning Services</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+    
+    <style>
+        /* Reset */
+        * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+        }
 
-    body {
-      font-family: 'Arial', sans-serif;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: #333;
-      line-height: 1.6;
-      min-height: 100vh;
-    }
+        body {
+          font-family: 'Arial', sans-serif;
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          color: #333;
+          line-height: 1.6;
+          min-height: 100vh;
+        }
 
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 0 20px;
-    }
+        .container {
+          max-width: 1200px;
+          margin: 0 auto;
+          padding: 0 20px;
+        }
 
-    header {
-      background: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(10px);
-      box-shadow: 0 2px 20px rgba(0,0,0,0.1);
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      z-index: 1000;
-    }
+        header {
+          background: rgba(255, 255, 255, 0.95);
+          backdrop-filter: blur(10px);
+          box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          z-index: 1000;
+        }
 
-    .header-content {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 1rem 2rem;
-      flex-wrap: wrap;
-      gap: 1rem;
-    }
+        .header-content {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 1rem 2rem;
+          flex-wrap: wrap;
+          gap: 1rem;
+        }
 
-    .logo-container {
-      display: flex;
-      align-items: center;
-      gap: 15px;
-    }
+        .logo-container {
+          display: flex;
+          align-items: center;
+          gap: 15px;
+        }
 
-    .logo {
-      width: 60px;
-      height: 60px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      font-size: 1.5rem;
-      font-weight: bold;
-      border: 3px solid #667eea;
-    }
+        .logo {
+          width: 60px;
+          height: 60px;
+          border-radius: 50%;
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: white;
+          font-size: 1.5rem;
+          font-weight: bold;
+          border: 3px solid #667eea;
+        }
 
-    .logo-text h1 {
-      color: #667eea;
-      font-size: 1.8rem;
-      margin-bottom: 0.2rem;
-    }
+        .logo-text h1 {
+          color: #667eea;
+          font-size: 1.8rem;
+          margin-bottom: 0.2rem;
+        }
 
-    .logo-text p {
-      color: #666;
-      font-size: 0.9rem;
-    }
+        .logo-text p {
+          color: #666;
+          font-size: 0.9rem;
+        }
 
-    nav ul {
-      display: flex;
-      list-style: none;
-      gap: 2rem;
-    }
+        nav ul {
+          display: flex;
+          list-style: none;
+          gap: 2rem;
+        }
 
-    nav li:focus-within {
-      outline: 2px solid #667eea;
-      outline-offset: 2px;
-    }
+        nav li:focus-within {
+          outline: 2px solid #667eea;
+          outline-offset: 2px;
+        }
 
-    nav a {
-      text-decoration: none;
-      color: #667eea;
-      font-weight: 600;
-      padding: 0.5rem 1rem;
-      border-radius: 25px;
-      transition: all 0.3s ease;
-    }
+        nav a {
+          text-decoration: none;
+          color: #667eea;
+          font-weight: 600;
+          padding: 0.5rem 1rem;
+          border-radius: 25px;
+          transition: all 0.3s ease;
+        }
 
-    nav a:hover,
-    nav a:focus {
-      background: #667eea;
-      color: white;
-      transform: translateY(-2px);
-      outline: none;
-    }
+        nav a:hover,
+        nav a:focus {
+          background: #667eea;
+          color: white;
+          transform: translateY(-2px);
+          outline: none;
+        }
 
-    main {
-      margin-top: 100px;
-      padding: 2rem 0;
-    }
+        main {
+          margin-top: 100px;
+          padding: 2rem 0;
+        }
 
-    .hero {
-      text-align: center;
-      padding: 4rem 0;
-      color: white;
-    }
+        .hero {
+          text-align: center;
+          padding: 4rem 0;
+          color: white;
+        }
 
-    .hero h2 {
-      font-size: 3rem;
-      margin-bottom: 1rem;
-      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-    }
+        .hero h2 {
+          font-size: 3rem;
+          margin-bottom: 1rem;
+          text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
 
-    .hero p {
-      font-size: 1.2rem;
-      margin-bottom: 2rem;
-      opacity: 0.9;
-    }
+        .hero p {
+          font-size: 1.2rem;
+          margin-bottom: 2rem;
+          opacity: 0.9;
+        }
 
-    .cta-button {
-      display: inline-block;
-      background: white;
-      color: #667eea;
-      padding: 1rem 2rem;
-      text-decoration: none;
-      border-radius: 50px;
-      font-weight: bold;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-      transition: all 0.3s ease;
-    }
+        .cta-button {
+          display: inline-block;
+          background: white;
+          color: #667eea;
+          padding: 1rem 2rem;
+          text-decoration: none;
+          border-radius: 50px;
+          font-weight: bold;
+          box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+          transition: all 0.3s ease;
+        }
 
-    .cta-button:hover,
-    .cta-button:focus {
-      transform: translateY(-3px);
-      box-shadow: 0 6px 20px rgba(0,0,0,0.3);
-      outline: none;
-    }
+        .cta-button:hover,
+        .cta-button:focus {
+          transform: translateY(-3px);
+          box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+          outline: none;
+        }
 
-    /* Services Section */
-    .services {
-      background: white;
-      padding: 4rem 0;
-      margin: 2rem 0;
-      border-radius: 20px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-    }
+        /* Services Section */
+        .services {
+          background: white;
+          padding: 4rem 0;
+          margin: 2rem 0;
+          border-radius: 20px;
+          box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
 
-    .services h2 {
-      text-align: center;
-      color: #667eea;
-      margin-bottom: 1rem;
-    }
+        .services h2 {
+          text-align: center;
+          color: #667eea;
+          margin-bottom: 1rem;
+        }
 
-    .services > p {
-      text-align: center;
-      color: #666;
-      margin-bottom: 2rem;
-    }
+        .services > p {
+          text-align: center;
+          color: #666;
+          margin-bottom: 2rem;
+        }
 
-    .services-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 2rem;
-      margin-top: 3rem;
-    }
+        .services-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+          gap: 2rem;
+          margin-top: 3rem;
+        }
 
-    .service-card {
-      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-      color: white;
-      padding: 2rem;
-      border-radius: 15px;
-      text-align: center;
-      transition: transform 0.3s ease;
-    }
+        .service-card {
+          background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+          color: white;
+          padding: 2rem;
+          border-radius: 15px;
+          text-align: center;
+          transition: transform 0.3s ease;
+        }
 
-    .service-card:hover {
-      transform: translateY(-5px);
-    }
+        .service-card:hover {
+          transform: translateY(-5px);
+        }
 
-    .service-card h3 {
-      font-size: 1.5rem;
-      margin-bottom: 1rem;
-    }
+        .service-card h3 {
+          font-size: 1.5rem;
+          margin-bottom: 1rem;
+        }
 
-    /* Quote Form */
-    .quote-section {
-      background: rgba(255, 255, 255, 0.95);
-      padding: 3rem;
-      border-radius: 20px;
-      margin: 2rem 0;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-    }
+        /* Quote Form */
+        .quote-section {
+          background: rgba(255, 255, 255, 0.95);
+          padding: 3rem;
+          border-radius: 20px;
+          margin: 2rem 0;
+          box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
 
-    .quote-section h2 {
-      text-align: center;
-      color: #667eea;
-      margin-bottom: 1rem;
-    }
+        .quote-section h2 {
+          text-align: center;
+          color: #667eea;
+          margin-bottom: 1rem;
+        }
 
-    .quote-section > p {
-      text-align: center;
-      color: #666;
-      margin-bottom: 2rem;
-    }
+        .quote-section > p {
+          text-align: center;
+          color: #666;
+          margin-bottom: 2rem;
+        }
 
-    .quote-form {
-      max-width: 600px;
-      margin: 0 auto;
-    }
+        .quote-form {
+          max-width: 600px;
+          margin: 0 auto;
+        }
 
-    .form-group {
-      margin-bottom: 1.5rem;
-    }
+        .form-group {
+          margin-bottom: 1.5rem;
+        }
 
-    .form-group label {
-      display: block;
-      margin-bottom: 0.5rem;
-      color: #333;
-      font-weight: 600;
-    }
+        .form-group label {
+          display: block;
+          margin-bottom: 0.5rem;
+          color: #333;
+          font-weight: 600;
+        }
 
-    .form-group input,
-    .form-group textarea,
-    .form-group select {
-      width: 100%;
-      padding: 1rem;
-      border: 2px solid #e1e8ed;
-      border-radius: 10px;
-      font-size: 1rem;
-      transition: border-color 0.3s ease;
-    }
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+          width: 100%;
+          padding: 1rem;
+          border: 2px solid #e1e8ed;
+          border-radius: 10px;
+          font-size: 1rem;
+          transition: border-color 0.3s ease;
+        }
 
-    .form-group input:focus,
-    .form-group textarea:focus,
-    .form-group select:focus {
-      outline: none;
-      border-color: #667eea;
-    }
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+          outline: none;
+          border-color: #667eea;
+        }
 
-    .form-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1rem;
-    }
+        .form-row {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 1rem;
+        }
 
-    .submit-btn {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      border: none;
-      padding: 1rem 2rem;
-      font-size: 1.1rem;
-      font-weight: bold;
-      border-radius: 50px;
-      cursor: pointer;
-      width: 100%;
-      transition: all 0.3s ease;
-    }
+        .submit-btn {
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          color: white;
+          border: none;
+          padding: 1rem 2rem;
+          font-size: 1.1rem;
+          font-weight: bold;
+          border-radius: 50px;
+          cursor: pointer;
+          width: 100%;
+          transition: all 0.3s ease;
+        }
 
-    .submit-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
-    }
+        .submit-btn:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
 
-    .submit-btn:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-      transform: none;
-    }
+        .submit-btn:disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
+          transform: none;
+        }
 
-    /* Response Message */
-    .response-message {
-      margin-top: 1rem;
-      padding: 1rem;
-      border-radius: 10px;
-      text-align: center;
-      font-weight: bold;
-      display: none;
-    }
+        /* Response Message */
+        .response-message {
+          margin-top: 1rem;
+          padding: 1rem;
+          border-radius: 10px;
+          text-align: center;
+          font-weight: bold;
+          display: none;
+        }
 
-    .response-message.success {
-      background: #d4edda;
-      color: #155724;
-      border: 1px solid #c3e6cb;
-    }
+        .response-message.success {
+          background: #d4edda;
+          color: #155724;
+          border: 1px solid #c3e6cb;
+        }
 
-    .response-message.error {
-      background: #f8d7da;
-      color: #721c24;
-      border: 1px solid #f5c6cb;
-    }
+        .response-message.error {
+          background: #f8d7da;
+          color: #721c24;
+          border: 1px solid #f5c6cb;
+        }
 
-    /* Contact Info */
-    .contact-info {
-      background: rgba(255, 255, 255, 0.95);
-      padding: 2rem;
-      border-radius: 20px;
-      margin: 2rem 0;
-      text-align: center;
-    }
+        /* Contact Info */
+        .contact-info {
+          background: rgba(255, 255, 255, 0.95);
+          padding: 2rem;
+          border-radius: 20px;
+          margin: 2rem 0;
+          text-align: center;
+        }
 
-    .contact-info h2 {
-      color: #667eea;
-      margin-bottom: 1rem;
-    }
+        .contact-info h2 {
+          color: #667eea;
+          margin-bottom: 1rem;
+        }
 
-    .contact-details {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 2rem;
-      margin-top: 2rem;
-    }
+        .contact-details {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+          gap: 2rem;
+          margin-top: 2rem;
+        }
 
-    .contact-item {
-      padding: 1rem;
-    }
+        .contact-item {
+          padding: 1rem;
+        }
 
-    .contact-item h3 {
-      color: #667eea;
-      margin-bottom: 0.5rem;
-    }
+        .contact-item h3 {
+          color: #667eea;
+          margin-bottom: 0.5rem;
+        }
 
-    /* Footer */
-    footer {
-      background: rgba(0, 0, 0, 0.8);
-      color: white;
-      text-align: center;
-      padding: 2rem 0;
-      margin-top: 2rem;
-    }
+        /* Footer */
+        footer {
+          background: rgba(0, 0, 0, 0.8);
+          color: white;
+          text-align: center;
+          padding: 2rem 0;
+          margin-top: 2rem;
+        }
 
-    /* Spinner for loading */
-    .spinner {
-      border: 3px solid #f3f3f3;
-      border-top: 3px solid #667eea;
-      border-radius: 50%;
-      width: 20px;
-      height: 20px;
-      animation: spin 1s linear infinite;
-      display: inline-block;
-      margin-right: 10px;
-    }
+        /* Spinner for loading */
+        .spinner {
+          border: 3px solid #f3f3f3;
+          border-top: 3px solid #667eea;
+          border-radius: 50%;
+          width: 20px;
+          height: 20px;
+          animation: spin 1s linear infinite;
+          display: inline-block;
+          margin-right: 10px;
+        }
 
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
 
-    /* Responsive Design */
-    @media (max-width: 768px) {
-      .header-content {
-        flex-direction: column;
-        text-align: center;
-      }
+        /* Responsive Design */
+        @media (max-width: 768px) {
+          .header-content {
+            flex-direction: column;
+            text-align: center;
+          }
 
-      .hero h2 {
-        font-size: 2rem;
-      }
+          .hero h2 {
+            font-size: 2rem;
+          }
 
-      .form-row {
-        grid-template-columns: 1fr;
-      }
+          .form-row {
+            grid-template-columns: 1fr;
+          }
 
-      .services-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-  </style>
+          .services-grid {
+            grid-template-columns: 1fr;
+          }
+        }
+      </style>
 </head>
 <body>
 
@@ -460,15 +464,15 @@
           <div class="form-group">
             <label for="serviceType">Service Type *</label>
             <select id="serviceType" name="serviceType" required>
-              <option value="">Select a service</option>
-              <option value="residential-regular">Residential - Regular Cleaning</option>
-              <option value="residential-deep">Residential - Deep Cleaning</option>
-              <option value="residential-moveout">Residential - Move In/Out</option>
-              <option value="commercial-office">Commercial - Office</option>
-              <option value="commercial-retail">Commercial - Retail</option>
-              <option value="specialized-carpet">Specialized - Carpet Cleaning</option>
-              <option value="specialized-windows">Specialized - Window Cleaning</option>
-              <option value="other">Other (please specify in message)</option>
+                <option value="">Select a service...</option>
+                <option value="residential_cleaning">Residential Cleaning</option>
+                <option value="commercial_cleaning">Commercial Cleaning</option>
+                <option value="end_of_lease">End of Lease Cleaning</option>
+                <option value="deep_cleaning">Deep Cleaning</option>
+                <option value="carpet_cleaning">Carpet Cleaning</option>
+                <option value="window_cleaning">Window Cleaning</option>
+                <option value="pressure_washing">Pressure Washing</option>
+                <option value="sanitization">Sanitization Services</option>
             </select>
           </div>
         </div>
@@ -499,13 +503,8 @@
         
         <div class="form-group">
           <label for="message">Additional Details *</label>
-          <textarea
-            id="message"
-            name="message"
-            rows="5"
-            placeholder="Please describe the size of the property, specific cleaning requirements, and any other details that would help us provide an accurate quote..."
-            required
-          ></textarea>
+          <textarea id="message" name="message" rows="4" required 
+              placeholder="Please describe your cleaning needs, property size, any specific requirements..."></textarea>
         </div>
 
         <button type="submit" class="submit-btn" id="submitBtn">
@@ -668,6 +667,135 @@
       submitText.textContent = 'Get My Free Quote';
     }
   });
+
+  // Add form validation helpers
+function validateEmail(email) {
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(email);
+}
+
+function validatePhone(phone) {
+    const re = /^[\+]?[1-9][\d]{0,15}$/;
+    return re.test(phone.replace(/\s+/g, ''));
+}
+
+function showError(message) {
+    const errorDiv = document.getElementById('responseMessage');
+    errorDiv.className = 'response-message error';
+    errorDiv.textContent = message;
+    errorDiv.style.display = 'block';
+    errorDiv.scrollIntoView({ behavior: 'smooth' });
+}
+
+function showSuccess(message) {
+    const successDiv = document.getElementById('responseMessage');
+    successDiv.className = 'response-message success';
+    successDiv.textContent = message;
+    successDiv.style.display = 'block';
+    successDiv.scrollIntoView({ behavior: 'smooth' });
+}
+
+document.getElementById('quoteForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const submitBtn = document.getElementById('submitBtn');
+    const submitText = document.getElementById('submitText');
+    const responseMessage = document.getElementById('responseMessage');
+
+    // Clear previous messages
+    responseMessage.style.display = 'none';
+
+    // Get form data
+    const formData = new FormData(this);
+    const quoteData = {
+        name: formData.get('name')?.trim(),
+        email: formData.get('email')?.trim(),
+        phone: formData.get('phone')?.trim(),
+        serviceType: formData.get('serviceType'),
+        message: formData.get('message')?.trim(),
+        preferredDate: formData.get('preferredDate')
+    };
+
+    // Client-side validation
+    if (!quoteData.name || quoteData.name.length < 2) {
+        return showError('Please enter a valid name (at least 2 characters)');
+    }
+
+    if (!quoteData.email || !validateEmail(quoteData.email)) {
+        return showError('Please enter a valid email address');
+    }
+
+    if (!quoteData.phone || !validatePhone(quoteData.phone)) {
+        return showError('Please enter a valid phone number');
+    }
+
+    if (!quoteData.serviceType) {
+        return showError('Please select a service type');
+    }
+
+    if (!quoteData.message || quoteData.message.length < 10) {
+        return showError('Please provide more details about your cleaning needs (at least 10 characters)');
+    }
+
+    // Show loading state
+    submitBtn.disabled = true;
+    submitText.innerHTML = '<div class="spinner"></div>Sending Request...';
+
+    // API endpoint
+    const API_BASE_URL = window.location.hostname === 'localhost' 
+        ? 'http://localhost:3000'
+        : 'https://www.bandcleaning-com-au.onrender.com';
+
+    try {
+        console.log('Submitting quote to:', `${API_BASE_URL}/api/quotes`);
+        console.log('Quote data:', quoteData);
+
+        const response = await fetch(`${API_BASE_URL}/api/quotes`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(quoteData)
+        });
+
+        const result = await response.json();
+        console.log('Server response:', result);
+
+        if (response.ok) {
+            showSuccess(`Quote request submitted successfully! Quote ID: ${result.quoteId}. We'll get back to you within 24 hours.`);
+            this.reset();
+        } else {
+            throw new Error(result.error || `Server error: ${response.status}`);
+        }
+    } catch (error) {
+        console.error('Submission error:', error);
+        showError(`Failed to submit quote: ${error.message}. Please try again or contact us directly.`);
+    } finally {
+        submitBtn.disabled = false;
+        submitText.textContent = 'Get My Free Quote';
+    }
+});
+
+// Add real-time validation
+document.getElementById('email').addEventListener('blur', function() {
+    if (this.value && !validateEmail(this.value)) {
+        this.style.borderColor = '#e74c3c';
+        this.setCustomValidity('Please enter a valid email address');
+    } else {
+        this.style.borderColor = '';
+        this.setCustomValidity('');
+    }
+});
+
+document.getElementById('phone').addEventListener('blur', function() {
+    if (this.value && !validatePhone(this.value)) {
+        this.style.borderColor = '#e74c3c';
+        this.setCustomValidity('Please enter a valid phone number');
+    } else {
+        this.style.borderColor = '';
+        this.setCustomValidity('');
+    }
+});
 </script>
 
 </body>

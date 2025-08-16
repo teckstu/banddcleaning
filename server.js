@@ -44,8 +44,24 @@ initializeDatabase()
 const requiredEnvVars = [
   'JWT_SECRET', 
   'EMAIL_USER', 
-  'EMAIL_PASS'
+  'EMAIL_PASS',
+  'CRYPTO_PEPPER',
+  'DEFAULT_ADMIN_EMAIL'
 ];
+
+const optionalEnvVars = {
+  'NODE_ENV': 'development',
+  'PORT': '3000',
+  'EMAIL_RECEIVER': process.env.EMAIL_USER,
+  'DB_LOGGING': 'false'
+};
+
+// Set defaults for optional variables
+Object.entries(optionalEnvVars).forEach(([key, defaultValue]) => {
+  if (!process.env[key]) {
+    process.env[key] = defaultValue;
+  }
+});
 
 const missingVars = requiredEnvVars.filter(v => !process.env[v]);
 if (missingVars.length > 0) {
@@ -54,7 +70,7 @@ if (missingVars.length > 0) {
   process.exit(1);
 }
 
-// ================
+// =====================
 // SECURITY MIDDLEWARE - MORE PERMISSIVE CSP FOR DEVELOPMENT
 // ================
 app.use(helmet({
@@ -106,18 +122,14 @@ const allowedOrigins = process.env.NODE_ENV === 'production' ? [
   'https://banddcleaning.com.au',
   'https://www.banddcleaning.com.au',
   'https://admin.banddcleaning.com.au',
-  'https://banddcleaning-com-au.onrender.com'
+  'https://www.bandcleaning-com-au.onrender.com'
 ] : [
   'http://localhost:3000',
   'http://localhost:3001',
   'http://localhost:5500',
   'http://127.0.0.1:3000',
-  'http://127.0.0.1:5500',
-  // Add production domains to dev for testing
-  'https://banddcleaning.com.au',
-  'https://www.banddcleaning.com.au',
-  'https://admin.banddcleaning.com.au',
-  'https://banddcleaning-com-au.onrender.com'
+  'http://127.0.0.1:5500'
+  // Remove production domains from development
 ];
 
 console.log('🔒 CORS Allowed Origins:', allowedOrigins);
@@ -310,14 +322,86 @@ const authenticate = (req, res, next) => {
   }
 };
 
+// Admin Authentication Middleware
+const authenticateAdmin = async (req, res, next) => {
+  try {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({ error: 'No token provided' });
+    }
+
+    const token = authHeader.substring(7);
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    
+    // Find admin by ID
+    const admin = await Admin.findByPk(decoded.adminId);
+    if (!admin || !admin.is_active) {
+      return res.status(401).json({ error: 'Invalid token or inactive admin' });
+    }
+
+    req.admin = admin;
+    next();
+  } catch (error) {
+    console.error('Auth middleware error:', error);
+    res.status(401).json({ error: 'Invalid token' });
+  }
+};
+
 // ================
 // STATIC FILES
 // ================
 app.use(express.static(path.join(__dirname, 'public')));
 
-// ================
-// API ROUTES - UPDATED FOR DATABASE
-// ================
+// Force favicon serving (fixed: single handler, correct fallback base64 and encoding)
+app.get('/favicon.ico', (req, res) => {
+  const faviconPath = path.join(__dirname, 'public', 'favicon.ico');
+
+  console.log('🔍 Favicon requested');
+  console.log('📁 Looking for:', faviconPath);
+  console.log('📁 File exists:', fs.existsSync(faviconPath));
+
+  if (fs.existsSync(faviconPath)) {
+    console.log('✅ Serving favicon file');
+    res.setHeader('Content-Type', 'image/x-icon');
+    res.setHeader('Cache-Control', 'public, max-age=86400');
+    return res.sendFile(faviconPath);
+  }
+
+  console.log('❌ Favicon not found, serving fallback');
+
+  // Small 16x16 transparent PNG fallback (base64), properly decoded
+  const fallbackBase64 = 'iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAAfSC3RAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH5QMLCxU3y0f0WwAAAB1pVFh0Q29tbWVudAAAAAAAQ3JlYXRlZCB3aXRoIEdJTVBkLmUHAAAAF0lEQVQoz2NgGAXUBwYGBgYGJgEAADgAAf6xB0kAAAAASUVORK5CYII=';
+
+  const fallbackIcon = Buffer.from(fallbackBase64, 'base64');
+  res.setHeader('Content-Type', 'image/png');   // PNG mime for this base64
+  res.setHeader('Cache-Control', 'public, max-age=86400');
+  return res.end(fallbackIcon);
+});
+
+// Debug route to check what files exist (remove after testing)
+app.get('/debug/files', (req, res) => {
+  const publicPath = path.join(__dirname, 'public');
+  try {
+    const files = fs.readdirSync(publicPath);
+    const faviconPath = path.join(publicPath, 'favicon.ico');
+    const faviconStats = fs.existsSync(faviconPath) ? fs.statSync(faviconPath) : null;
+    
+    res.json({
+      publicPath,
+      files,
+      faviconExists: fs.existsSync(faviconPath),
+      faviconSize: faviconStats ? faviconStats.size : 0,
+      __dirname,
+      nodeEnv: process.env.NODE_ENV
+    });
+  } catch (error) {
+    res.json({
+      error: error.message,
+      publicPath,
+      __dirname
+    });
+  }
+});
 
 // Admin login endpoint - updated for database
 app.post('/api/auth/login', async (req, res) => {
@@ -412,59 +496,80 @@ app.post('/api/quotes', async (req, res) => {
   try {
     const { name, email, phone, serviceType, message, preferredDate } = req.body;
     
-    if (!name || !email || !phone || !serviceType) {
+    console.log('📝 Quote submission received:', { name, email, phone, serviceType });
+    
+    // Validation
+    if (!name || !email || !serviceType) {
       return res.status(400).json({ 
-        error: 'Missing required fields: name, email, phone, serviceType' 
+        error: 'Missing required fields: name, email, serviceType',
+        received: { name: !!name, email: !!email, serviceType: !!serviceType }
       });
     }
 
-    // Create quote using database service
-    const quote = await QuoteService.createQuote({
-      name,
-      email,
-      phone,
-      serviceType,
-      message,
-      preferredDate
-    }, {
-      ip: req.ip,
-      userAgent: req.get('User-Agent')
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({ error: 'Invalid email format' });
+    }
+
+    // Create quote with correct field mapping
+    const quote = await Quote.create({
+      id: require('uuid').v4(),
+      name: name.trim(),
+      email: email.trim().toLowerCase(),
+      phone: phone?.trim() || '',
+      service_type: serviceType, // ← Fix the field mapping
+      message: message?.trim() || '',
+      preferred_date: preferredDate ? new Date(preferredDate) : null,
+      status: 'new',
+      ip_address: req.ip,
+      user_agent: req.get('User-Agent')
     });
+
+    console.log('✅ Quote created successfully:', quote.id);
 
     // Send email notification
     if (emailTransporter) {
       try {
         await emailTransporter.sendMail({
-          from: process.env.EMAIL_USER,
-          to: process.env.EMAIL_RECEIVER || process.env.EMAIL_USER,
-          subject: `New Quote Request - ${serviceType}`,
+          from: `"${process.env.EMAIL_FROM_NAME}" <${process.env.EMAIL_USER}>`,
+          to: process.env.EMAIL_RECEIVER,
+          subject: `🧹 New Quote Request - ${serviceType}`,
           html: `
-            <h2>🧹 New Quote Request</h2>
-            <p><strong>Quote ID:</strong> ${quote.id}</p>
-            <p><strong>Name:</strong> ${quote.name}</p>
-            <p><strong>Email:</strong> ${quote.email}</p>
-            <p><strong>Phone:</strong> ${quote.phone}</p>
-            <p><strong>Service:</strong> ${quote.service_type}</p>
-            <p><strong>Preferred Date:</strong> ${quote.preferred_date || 'Not specified'}</p>
-            <p><strong>Message:</strong><br>${quote.message || 'No additional message'}</p>
-            <p><strong>Submitted:</strong> ${quote.created_at}</p>
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+              <h2 style="color: #8B5CF6;">🧹 New Quote Request</h2>
+              <div style="background: #f8f9fa; padding: 20px; border-radius: 8px;">
+                <p><strong>Quote ID:</strong> ${quote.id}</p>
+                <p><strong>Name:</strong> ${quote.name}</p>
+                <p><strong>Email:</strong> <a href="mailto:${quote.email}">${quote.email}</a></p>
+                <p><strong>Phone:</strong> <a href="tel:${quote.phone}">${quote.phone}</a></p>
+                <p><strong>Service:</strong> ${serviceType}</p>
+                <p><strong>Preferred Date:</strong> ${quote.preferred_date ? new Date(quote.preferred_date).toLocaleDateString() : 'Not specified'}</p>
+                ${quote.message ? `<p><strong>Message:</strong><br>${quote.message}</p>` : ''}
+                <p><strong>Submitted:</strong> ${new Date().toLocaleString()}</p>
+                <p><strong>IP Address:</strong> ${req.ip}</p>
+              </div>
+            </div>
           `
         });
-        console.log('✅ Quote email sent successfully');
+        console.log('✅ Quote notification email sent');
       } catch (emailError) {
-        console.warn('⚠️ Failed to send quote email:', emailError.message);
+        console.warn('⚠️ Email notification failed:', emailError.message);
       }
     }
 
     res.json({
       success: true,
-      message: 'Quote request submitted successfully',
+      message: 'Quote request submitted successfully! We\'ll get back to you within 24 hours.',
       quoteId: quote.id
     });
 
   } catch (error) {
-    console.error('Quote submission error:', error);
-    res.status(500).json({ error: 'Failed to submit quote request' });
+    console.error('❌ Quote submission error:', error);
+    res.status(500).json({ 
+      error: 'Failed to submit quote request. Please try again.',
+      details: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
   }
 });
 
@@ -551,6 +656,211 @@ app.get('/api/admin/stats', authenticate, async (req, res) => {
     console.error('Error fetching stats:', error);
     res.status(500).json({ error: 'Failed to fetch statistics' });
   }
+});
+
+// Admin login endpoint - updated for database
+app.post('/api/admin/login', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    
+    console.log('🔐 Admin login attempt:', email);
+    
+    if (!email || !password) {
+      return res.status(400).json({ error: 'Email and password are required' });
+    }
+
+    // Find admin by email
+    const admin = await Admin.findOne({ 
+      where: { 
+        email: email.toLowerCase().trim(),
+        is_active: true 
+      } 
+    });
+
+    if (!admin) {
+      console.log('❌ Admin not found:', email);
+      return res.status(401).json({ error: 'Invalid email or password' });
+    }
+
+    // Verify password
+    const isValidPassword = await bcrypt.compare(password, admin.password_hash);
+    if (!isValidPassword) {
+      console.log('❌ Invalid password for admin:', email);
+      return res.status(401).json({ error: 'Invalid email or password' });
+    }
+
+    // Generate JWT token
+    const token = jwt.sign(
+      { 
+        adminId: admin.id,
+        email: admin.email,
+        role: admin.role 
+      },
+      process.env.JWT_SECRET,
+      { 
+        expiresIn: process.env.JWT_EXPIRES_IN || '1h',
+        issuer: process.env.JWT_ISSUER,
+        audience: process.env.JWT_AUDIENCE
+      }
+    );
+
+    console.log('✅ Admin login successful:', email);
+
+    res.json({
+      success: true,
+      token,
+      admin: {
+        id: admin.id,
+        email: admin.email,
+        name: admin.name,
+        role: admin.role
+      }
+    });
+
+  } catch (error) {
+    console.error('❌ Admin login error:', error);
+    res.status(500).json({ error: 'Login failed. Please try again.' });
+  }
+});
+
+// Get All Quotes (Admin Only)
+app.get('/api/admin/quotes', authenticateAdmin, async (req, res) => {
+  try {
+    console.log('📋 Admin fetching quotes:', req.admin.email);
+    
+    const quotes = await Quote.findAll({
+      order: [['created_at', 'DESC']],
+      limit: 100 // Limit for performance
+    });
+
+    console.log(`✅ Retrieved ${quotes.length} quotes`);
+
+    res.json({
+      success: true,
+      quotes: quotes,
+      count: quotes.length
+    });
+
+  } catch (error) {
+    console.error('❌ Error fetching quotes:', error);
+    res.status(500).json({ error: 'Failed to fetch quotes' });
+  }
+});
+
+// Update Quote Status (Admin Only)
+app.put('/api/admin/quotes/:id', authenticateAdmin, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+    
+    console.log('📝 Updating quote status:', id, 'to', status);
+    
+    if (!status) {
+      return res.status(400).json({ error: 'Status is required' });
+    }
+
+    const validStatuses = ['new', 'contacted', 'quoted', 'completed', 'cancelled'];
+    if (!validStatuses.includes(status)) {
+      return res.status(400).json({ error: 'Invalid status' });
+    }
+
+    const quote = await Quote.findByPk(id);
+    if (!quote) {
+      return res.status(404).json({ error: 'Quote not found' });
+    }
+
+    await quote.update({ status });
+    
+    console.log('✅ Quote status updated successfully');
+
+    res.json({
+      success: true,
+      quote: quote
+    });
+
+  } catch (error) {
+    console.error('❌ Error updating quote status:', error);
+    res.status(500).json({ error: 'Failed to update quote status' });
+  }
+});
+
+// Delete Quote (Admin Only)
+app.delete('/api/admin/quotes/:id', authenticateAdmin, async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    console.log('🗑️ Deleting quote:', id);
+    
+    const quote = await Quote.findByPk(id);
+    if (!quote) {
+      return res.status(404).json({ error: 'Quote not found' });
+    }
+
+    await quote.destroy();
+    
+    console.log('✅ Quote deleted successfully');
+
+    res.json({
+      success: true,
+      message: 'Quote deleted successfully'
+    });
+
+  } catch (error) {
+    console.error('❌ Error deleting quote:', error);
+    res.status(500).json({ error: 'Failed to delete quote' });
+  }
+});
+
+// Admin Dashboard Stats
+app.get('/api/admin/stats', authenticateAdmin, async (req, res) => {
+  try {
+    console.log('📊 Admin fetching stats:', req.admin.email);
+    
+    const totalQuotes = await Quote.count();
+    const newQuotes = await Quote.count({ where: { status: 'new' } });
+    const contactedQuotes = await Quote.count({ where: { status: 'contacted' } });
+    const completedQuotes = await Quote.count({ where: { status: 'completed' } });
+    
+    // Get quotes from last 7 days
+    const weekAgo = new Date();
+    weekAgo.setDate(weekAgo.getDate() - 7);
+    
+    const recentQuotes = await Quote.count({
+      where: {
+        created_at: {
+          [require('sequelize').Op.gte]: weekAgo
+        }
+      }
+    });
+
+    res.json({
+      success: true,
+      stats: {
+        totalQuotes,
+        newQuotes,
+        contactedQuotes,
+        completedQuotes,
+        recentQuotes
+      }
+    });
+
+  } catch (error) {
+    console.error('❌ Error fetching stats:', error);
+    res.status(500).json({ error: 'Failed to fetch stats' });
+  }
+});
+
+// Test Admin Endpoint
+app.get('/api/admin/test', authenticateAdmin, (req, res) => {
+  res.json({
+    success: true,
+    message: 'Admin authentication working',
+    admin: {
+      id: req.admin.id,
+      email: req.admin.email,
+      name: req.admin.name
+    }
+  });
 });
 
 // ================

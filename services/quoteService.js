@@ -8,8 +8,8 @@ class QuoteService {
       const quote = await Quote.create({
         name: quoteData.name?.trim(),
         email: quoteData.email?.trim().toLowerCase(),
-        phone: quoteData.phone?.trim(),
-        service_type: quoteData.serviceType,
+        phone: quoteData.phone?.trim() || '',
+        service_type: quoteData.serviceType, // Fix field mapping
         message: quoteData.message?.trim() || null,
         preferred_date: quoteData.preferredDate || null,
         ip_address: requestInfo.ip || null,
@@ -19,6 +19,7 @@ class QuoteService {
 
       return quote;
     } catch (error) {
+      console.error('Database error:', error);
       throw new Error(`Failed to create quote: ${error.message}`);
     }
   }
