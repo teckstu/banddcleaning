@@ -1,0 +1,13 @@
+[
+  {
+    "id": "7b66a8bb-7197-496a-b54b-8b102aaea9eb",
+    "name": "John Smith",
+    "email": "john@example.com",
+    "phone": "0412345678",
+    "serviceType": "End of Lease Cleaning",
+    "message": "3 bedroom house, need quote please",
+    "preferredDate": null,
+    "submittedAt": "2025-08-16T08:18:08.018Z",
+    "status": "new"
+  }
+]
