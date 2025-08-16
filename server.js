@@ -72,19 +72,34 @@ app.use(cookieParser());
 const allowedOrigins = process.env.NODE_ENV === 'production' ? [
   'https://banddcleaning.com.au',
   'https://www.banddcleaning.com.au',
-  'https://admin.banddcleaning.com.au'
+  'https://admin.banddcleaning.com.au',
+  'https://banddcleaning-com-au.onrender.com'
 ] : [
   'http://localhost:3000',
   'http://localhost:3001',
-  'http://localhost:5500'
+  'http://localhost:5500',
+  'http://127.0.0.1:3000',
+  'http://127.0.0.1:5500',
+  null, // Allow requests with no origin (like mobile apps or curl requests)
+  undefined
 ];
 
 app.use(cors({
   origin: (origin, callback) => {
-    if (!origin || allowedOrigins.includes(origin)) {
+    console.log(`Request origin: ${origin}`);
+    
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) {
+      console.log('✅ Allowing request with no origin');
+      return callback(null, true);
+    }
+    
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      console.log(`✅ CORS allowed for origin: ${origin}`);
       callback(null, true);
     } else {
-      console.warn(`🚨 CORS blocked request from: ${origin}`);
+      console.log(`❌ CORS blocked request from: ${origin}`);
+      console.log(`Allowed origins: ${allowedOrigins.join(', ')}`);
       callback(new Error('Not allowed by CORS policy'));
     }
   },
@@ -212,23 +227,36 @@ const verifyToken = (token) => {
 // AUTH MIDDLEWARE
 // ================
 const authenticate = (req, res, next) => {
+  console.log('🔐 Authentication check for:', req.path);
+  console.log('Cookies:', req.cookies);
+  console.log('Authorization header:', req.headers['authorization']);
+  
   const token = req.cookies?.token || 
                 req.headers['authorization']?.split(' ')[1];
   
+  console.log('Token found:', token ? 'Yes' : 'No');
+  
   if (!token) {
+    console.log('❌ No token provided');
     return res.status(401).json({ error: 'Authentication required' });
   }
 
   try {
+    console.log('🔍 Verifying token...');
     const decoded = verifyToken(token);
+    console.log('✅ Token decoded successfully:', decoded);
+    
     req.user = {
       id: decoded.id,
       role: decoded.role,
       sessionId: decoded.jti
     };
+    
+    console.log('✅ User authenticated:', req.user);
     next();
   } catch (err) {
     console.warn(`⚠️ JWT Error: ${err.message}`);
+    console.warn('Token that failed:', token);
     res.status(403).json({ error: 'Invalid or expired token' });
   }
 };
@@ -261,22 +289,86 @@ app.get('/admin', authenticate, (req, res) => {
 // ================
 // API ROUTES
 // ================
-app.get('/api/health', (req, res) => {
-  res.json({ 
-    status: 'ok', 
-    timestamp: new Date().toISOString(),
-    environment: process.env.NODE_ENV,
-    uptime: Math.floor(process.uptime())
-  });
+
+// Admin login endpoint
+app.post('/api/auth/login', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    
+    console.log('Login attempt for:', email);
+    
+    if (!email || !password) {
+      console.log('Missing email or password');
+      return res.status(400).json({ error: 'Email and password required' });
+    }
+    
+    // Read admin credentials
+    const adminPath = path.join(__dirname, 'admin.json');
+    if (!fs.existsSync(adminPath)) {
+      console.log('Admin configuration not found');
+      return res.status(500).json({ error: 'Admin configuration not found' });
+    }
+    
+    const adminData = JSON.parse(fs.readFileSync(adminPath, 'utf8'));
+    console.log('Admin email from file:', adminData.email);
+    
+    if (email.toLowerCase() !== adminData.email.toLowerCase()) {
+      console.log('Email does not match');
+      return res.status(401).json({ error: 'Invalid credentials' });
+    }
+    
+    // Check password
+    let passwordHash = adminData.passwordHash;
+    if (passwordHash.startsWith('$$')) {
+      passwordHash = passwordHash.substring(1);
+    }
+    
+    console.log('Checking password against hash');
+    const isValidPassword = await bcrypt.compare(password, passwordHash);
+    console.log('Password valid:', isValidPassword);
+    
+    if (!isValidPassword) {
+      console.log('Invalid password');
+      return res.status(401).json({ error: 'Invalid credentials' });
+    }
+    
+    // Create JWT token using the same function as verifyToken expects
+    const token = createToken({
+      id: adminData.email,
+      role: 'admin'
+    });
+    
+    console.log('Token created successfully');
+    
+    // Set secure cookie
+    res.cookie('token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 3600000 // 1 hour
+    });
+    
+    // Update last login
+    adminData.lastLogin = new Date().toISOString();
+    fs.writeFileSync(adminPath, JSON.stringify(adminData, null, 2));
+    
+    console.log('Login successful for:', email);
+    res.json({
+      success: true,
+      token,
+      message: 'Login successful'
+    });
+    
+  } catch (error) {
+    console.error('Login error:', error);
+    res.status(500).json({ error: 'Login failed' });
+  }
 });
 
-app.get('/api/admin', authenticate, (req, res) => {
-  res.json({ 
-    status: 'success',
-    data: {
-      user: req.user
-    }
-  });
+// Admin logout endpoint
+app.post('/api/auth/logout', (req, res) => {
+  res.clearCookie('token');
+  res.json({ success: true, message: 'Logged out successfully' });
 });
 
 // ================
