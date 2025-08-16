@@ -15,7 +15,27 @@ const xss = require('xss-clean');
 const compression = require('compression');
 const cookieParser = require('cookie-parser');
 
+// Database imports
+const { initializeDatabase, Quote, Admin } = require('./models/database');
+const QuoteService = require('./services/quoteService');
+
 const app = express();
+
+// =====================
+// DATABASE INITIALIZATION
+// =====================
+let dbInitialized = false;
+
+// Initialize database on startup
+initializeDatabase()
+  .then(() => {
+    dbInitialized = true;
+    console.log('🗄️ Database ready');
+  })
+  .catch((error) => {
+    console.error('❌ Database initialization failed:', error.message);
+    process.exit(1);
+  });
 
 // =====================
 // ENVIRONMENT VALIDATION
@@ -34,14 +54,31 @@ if (missingVars.length > 0) {
 }
 
 // ================
-// SECURITY MIDDLEWARE
+// SECURITY MIDDLEWARE - MORE PERMISSIVE CSP FOR DEVELOPMENT
 // ================
 app.use(helmet({
-  contentSecurityPolicy: {
+  contentSecurityPolicy: process.env.NODE_ENV === 'production' ? {
+    // Strict CSP for production
     directives: {
       defaultSrc: ["'self'"],
       styleSrc: ["'self'", "'unsafe-inline'"],
       scriptSrc: ["'self'"],
+      scriptSrcAttr: ["'none'"],
+      imgSrc: ["'self'", "data:", "https:"],
+      connectSrc: ["'self'"],
+      fontSrc: ["'self'"],
+      objectSrc: ["'none'"],
+      mediaSrc: ["'self'"],
+      frameSrc: ["'none'"],
+    },
+  } : {
+    // Permissive CSP for development
+    directives: {
+      defaultSrc: ["'self'"],
+      styleSrc: ["'self'", "'unsafe-inline'"],
+      scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
+      scriptSrcElem: ["'self'", "'unsafe-inline'"],
+      scriptSrcAttr: ["'unsafe-inline'"],
       imgSrc: ["'self'", "data:", "https:"],
       connectSrc: ["'self'"],
       fontSrc: ["'self'"],
@@ -248,10 +285,10 @@ const authenticate = (req, res, next) => {
 app.use(express.static(path.join(__dirname, 'public')));
 
 // ================
-// API ROUTES
+// API ROUTES - UPDATED FOR DATABASE
 // ================
 
-// Admin login endpoint
+// Admin login endpoint - updated for database
 app.post('/api/auth/login', async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -262,34 +299,51 @@ app.post('/api/auth/login', async (req, res) => {
       return res.status(400).json({ error: 'Email and password required' });
     }
     
-    const adminPath = path.join(__dirname, 'admin.json');
-    if (!fs.existsSync(adminPath)) {
-      return res.status(500).json({ error: 'Admin configuration not found' });
-    }
+    // Find admin in database
+    const admin = await Admin.findOne({ 
+      where: { 
+        email: email.toLowerCase(),
+        is_active: true 
+      } 
+    });
     
-    const adminData = JSON.parse(fs.readFileSync(adminPath, 'utf8'));
-    console.log('Admin email from file:', adminData.email);
-    
-    if (email.toLowerCase() !== adminData.email.toLowerCase()) {
-      console.log('Email does not match');
+    if (!admin) {
+      console.log('Admin not found');
       return res.status(401).json({ error: 'Invalid credentials' });
+    }
+
+    // Check if account is locked
+    if (admin.locked_until && admin.locked_until > new Date()) {
+      return res.status(423).json({ error: 'Account temporarily locked' });
     }
     
     console.log('Checking password against hash');
-    const isValidPassword = await bcrypt.compare(password, adminData.passwordHash);
-    console.log('Password valid:', isValidPassword);
+    const isValidPassword = await bcrypt.compare(password, admin.password_hash);
     
     if (!isValidPassword) {
+      // Increment login attempts
+      await admin.update({
+        login_attempts: admin.login_attempts + 1,
+        locked_until: admin.login_attempts >= 4 ? 
+          new Date(Date.now() + 15 * 60 * 1000) : null // Lock for 15 minutes after 5 attempts
+      });
+      
       console.log('Invalid password');
       return res.status(401).json({ error: 'Invalid credentials' });
     }
     
     const token = createToken({
-      id: adminData.email,
-      role: 'admin'
+      id: admin.id,
+      email: admin.email,
+      role: admin.role
     });
     
-    console.log('Token created successfully');
+    // Update login info
+    await admin.update({
+      last_login: new Date(),
+      login_attempts: 0,
+      locked_until: null
+    });
     
     res.cookie('token', token, {
       httpOnly: true,
@@ -298,13 +352,16 @@ app.post('/api/auth/login', async (req, res) => {
       maxAge: 3600000
     });
     
-    adminData.lastLogin = new Date().toISOString();
-    fs.writeFileSync(adminPath, JSON.stringify(adminData, null, 2));
-    
     console.log('Login successful for:', email);
     res.json({
       success: true,
-      message: 'Login successful'
+      message: 'Login successful',
+      user: {
+        id: admin.id,
+        email: admin.email,
+        name: admin.name,
+        role: admin.role
+      }
     });
     
   } catch (error) {
@@ -319,7 +376,7 @@ app.post('/api/auth/logout', (req, res) => {
   res.json({ success: true, message: 'Logged out successfully' });
 });
 
-// Quote submission endpoint
+// Quote submission endpoint - updated for database
 app.post('/api/quotes', async (req, res) => {
   try {
     const { name, email, phone, serviceType, message, preferredDate } = req.body;
@@ -330,30 +387,20 @@ app.post('/api/quotes', async (req, res) => {
       });
     }
 
-    const quote = {
-      id: uuidv4(),
-      name: name.trim(),
-      email: email.trim().toLowerCase(),
-      phone: phone.trim(),
+    // Create quote using database service
+    const quote = await QuoteService.createQuote({
+      name,
+      email,
+      phone,
       serviceType,
-      message: message?.trim() || '',
-      preferredDate: preferredDate || null,
-      submittedAt: new Date().toISOString(),
-      status: 'new'
-    };
+      message,
+      preferredDate
+    }, {
+      ip: req.ip,
+      userAgent: req.get('User-Agent')
+    });
 
-    // Save quote to file
-    const quotesPath = path.join(__dirname, 'quotes.json');
-    let quotes = [];
-    
-    if (fs.existsSync(quotesPath)) {
-      quotes = JSON.parse(fs.readFileSync(quotesPath, 'utf8'));
-    }
-    
-    quotes.push(quote);
-    fs.writeFileSync(quotesPath, JSON.stringify(quotes, null, 2));
-
-    // Send email if configured
+    // Send email notification
     if (emailTransporter) {
       try {
         await emailTransporter.sendMail({
@@ -361,13 +408,15 @@ app.post('/api/quotes', async (req, res) => {
           to: process.env.EMAIL_RECEIVER || process.env.EMAIL_USER,
           subject: `New Quote Request - ${serviceType}`,
           html: `
-            <h2>New Quote Request</h2>
+            <h2>🧹 New Quote Request</h2>
+            <p><strong>Quote ID:</strong> ${quote.id}</p>
             <p><strong>Name:</strong> ${quote.name}</p>
             <p><strong>Email:</strong> ${quote.email}</p>
             <p><strong>Phone:</strong> ${quote.phone}</p>
-            <p><strong>Service:</strong> ${quote.serviceType}</p>
-            <p><strong>Preferred Date:</strong> ${quote.preferredDate || 'Not specified'}</p>
+            <p><strong>Service:</strong> ${quote.service_type}</p>
+            <p><strong>Preferred Date:</strong> ${quote.preferred_date || 'Not specified'}</p>
             <p><strong>Message:</strong><br>${quote.message || 'No additional message'}</p>
+            <p><strong>Submitted:</strong> ${quote.created_at}</p>
           `
         });
         console.log('✅ Quote email sent successfully');
@@ -388,20 +437,88 @@ app.post('/api/quotes', async (req, res) => {
   }
 });
 
-// Admin routes
-app.get('/api/admin/quotes', authenticate, (req, res) => {
+// Admin routes - updated for database
+app.get('/api/admin/quotes', authenticate, async (req, res) => {
   try {
-    const quotesPath = path.join(__dirname, 'quotes.json');
-    let quotes = [];
-    
-    if (fs.existsSync(quotesPath)) {
-      quotes = JSON.parse(fs.readFileSync(quotesPath, 'utf8'));
-    }
-    
-    res.json({ quotes });
+    const {
+      page = 1,
+      limit = 50,
+      status,
+      serviceType,
+      search,
+      startDate,
+      endDate,
+      sortBy,
+      sortOrder
+    } = req.query;
+
+    const result = await QuoteService.getQuotes({
+      page: parseInt(page),
+      limit: parseInt(limit),
+      status,
+      serviceType,
+      search,
+      startDate,
+      endDate,
+      sortBy,
+      sortOrder
+    });
+
+    res.json(result);
   } catch (error) {
     console.error('Error fetching quotes:', error);
     res.status(500).json({ error: 'Failed to fetch quotes' });
+  }
+});
+
+// Get single quote
+app.get('/api/admin/quotes/:id', authenticate, async (req, res) => {
+  try {
+    const quote = await QuoteService.getQuoteById(req.params.id);
+    res.json({ quote });
+  } catch (error) {
+    console.error('Error fetching quote:', error);
+    res.status(404).json({ error: error.message });
+  }
+});
+
+// Update quote
+app.put('/api/admin/quotes/:id', authenticate, async (req, res) => {
+  try {
+    const { status, quote_amount, notes } = req.body;
+    
+    const updates = {};
+    if (status) updates.status = status;
+    if (quote_amount !== undefined) updates.quote_amount = quote_amount;
+    if (notes !== undefined) updates.notes = notes;
+
+    const quote = await QuoteService.updateQuote(req.params.id, updates);
+    res.json({ success: true, quote });
+  } catch (error) {
+    console.error('Error updating quote:', error);
+    res.status(400).json({ error: error.message });
+  }
+});
+
+// Delete quote
+app.delete('/api/admin/quotes/:id', authenticate, async (req, res) => {
+  try {
+    await QuoteService.deleteQuote(req.params.id);
+    res.json({ success: true, message: 'Quote deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting quote:', error);
+    res.status(400).json({ error: error.message });
+  }
+});
+
+// Get quote statistics
+app.get('/api/admin/stats', authenticate, async (req, res) => {
+  try {
+    const stats = await QuoteService.getQuoteStats();
+    res.json(stats);
+  } catch (error) {
+    console.error('Error fetching stats:', error);
+    res.status(500).json({ error: 'Failed to fetch statistics' });
   }
 });
 

@@ -1,6 +1,7 @@
 {
   "email": "bandcleaningco@gmail.com",
-  "passwordHash": "$2a$12$TiFqnRqt1v/G/keDQ6Y0tudrLw/IPyMH4JxDSQ82nKg43FMeUab9.",
-  "createdAt": "2025-08-16T07:42:01.419Z",
-  "lastLogin": "2025-08-16T07:43:30.789Z"
+  "passwordHash": "$2a$12$is.EN2zvyzBbO7V2EdNOheF9HVoOjuiRTORgzWWUU0wuzDpWAyCoO",
+  "createdAt": "2025-08-16T08:41:38.887Z",
+  "lastLogin": null,
+  "role": "admin"
 }
