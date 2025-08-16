@@ -165,8 +165,11 @@ const initializeDatabase = async () => {
     await sequelize.authenticate();
     console.log('✅ Database connection established');
 
-    // Sync models (create tables)
-    await sequelize.sync({ alter: true });
+    // FIXED: Use force: false and alter: false to prevent migration loop
+    await sequelize.sync({ 
+      force: false,    // Don't drop tables
+      alter: false     // Don't alter existing tables
+    });
     console.log('✅ Database models synchronized');
 
     // Create default admin if none exists

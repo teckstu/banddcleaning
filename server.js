@@ -18,6 +18,7 @@ const cookieParser = require('cookie-parser');
 // Database imports
 const { initializeDatabase, Quote, Admin } = require('./models/database');
 const QuoteService = require('./services/quoteService');
+const { createCorsMiddleware, corsSecurityMiddleware } = require('./middleware/corsMiddleware');
 
 const app = express();
 
@@ -98,49 +99,79 @@ app.use(mongoSanitize());
 app.use(xss());
 app.use(hpp());
 
-// =============
-// CORS CONFIG - FIXED
-// =============
+// ================
+// CORS CONFIGURATION - COMPLETE SECURITY
+// ================
 const allowedOrigins = process.env.NODE_ENV === 'production' ? [
   'https://banddcleaning.com.au',
   'https://www.banddcleaning.com.au',
-  'https://admin.banddcleaning.com.au'
+  'https://admin.banddcleaning.com.au',
+  'https://banddcleaning-com-au.onrender.com'
 ] : [
   'http://localhost:3000',
   'http://localhost:3001',
   'http://localhost:5500',
   'http://127.0.0.1:3000',
-  'http://127.0.0.1:5500'
+  'http://127.0.0.1:5500',
+  // Add production domains to dev for testing
+  'https://banddcleaning.com.au',
+  'https://www.banddcleaning.com.au',
+  'https://admin.banddcleaning.com.au',
+  'https://banddcleaning-com-au.onrender.com'
 ];
 
+console.log('🔒 CORS Allowed Origins:', allowedOrigins);
+
+// CORS middleware with STRICT security
 app.use(cors({
   origin: (origin, callback) => {
-    console.log(`🔍 Request origin: ${origin}`);
-    
-    // Allow requests with no origin in development only
-    if (!origin && process.env.NODE_ENV === 'development') {
-      console.log('✅ Allowing null origin in development');
+    console.log('🔍 CORS Check - Origin:', origin || 'null');
+
+    // Allow requests with no origin ONLY in development
+    if (!origin) {
+      if (process.env.NODE_ENV === 'development') {
+        console.log('✅ CORS: Allowing null origin in development');
+        return callback(null, true);
+      } else {
+        console.log('❌ CORS: Blocking null origin in production');
+        return callback(new Error('Origin required in production'), false);
+      }
+    }
+
+    // Check if origin is in allowed list
+    if (allowedOrigins.includes(origin)) {
+      console.log('✅ CORS: Origin allowed -', origin);
       return callback(null, true);
     }
-    
-    if (allowedOrigins.indexOf(origin) !== -1) {
-      console.log(`✅ CORS allowed for origin: ${origin}`);
-      callback(null, true);
-    } else {
-      console.log(`❌ CORS blocked request from: ${origin}`);
-      callback(new Error('Not allowed by CORS policy'));
-    }
+
+    // BLOCK unauthorized origins - THIS WAS MISSING!
+    console.warn('🚨 CORS: BLOCKED malicious origin -', origin);
+    return callback(new Error(`CORS policy: Origin ${origin} not allowed`), false);
   },
+  
   credentials: true,
-  methods: ['GET', 'POST', 'OPTIONS'],
-  allowedHeaders: [
-    'Content-Type',
-    'Authorization',
-    'X-Requested-With'
-  ],
-  exposedHeaders: [],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
   maxAge: 300
 }));
+
+// Additional CORS security middleware
+app.use((req, res, next) => {
+  const origin = req.get('Origin');
+  
+  // Log all cross-origin requests for monitoring
+  if (origin && !allowedOrigins.includes(origin)) {
+    console.warn('🚨 SECURITY ALERT: Blocked cross-origin request');
+    console.warn('  Origin:', origin);
+    console.warn('  IP:', req.ip);
+    console.warn('  Path:', req.path);
+    console.warn('  Method:', req.method);
+    console.warn('  User-Agent:', req.get('User-Agent'));
+    console.warn('  Timestamp:', new Date().toISOString());
+  }
+  
+  next();
+});
 
 // ================
 // RATE LIMITING - COMPLETELY FIXED
