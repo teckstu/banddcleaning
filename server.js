@@ -118,11 +118,16 @@ app.use(hpp());
 // ================
 // CORS CONFIGURATION - COMPLETE SECURITY
 // ================
-const allowedOrigins = process.env.NODE_ENV === 'production' ? [
+let allowedOrigins = process.env.NODE_ENV === 'production' ? [
   'https://banddcleaning.com.au',
   'https://www.banddcleaning.com.au',
   'https://admin.banddcleaning.com.au',
-  'https://www.bandcleaning-com-au.onrender.com'
+  // Fixed Render URL (was missing 'd' in banddcleaning)
+  'https://banddcleaning-com-au.onrender.com',
+  'https://www.banddcleaning-com-au.onrender.com',
+  // Additional common Render URL patterns
+  'https://banddcleaning.onrender.com',
+  'https://bandd-cleaning.onrender.com'
 ] : [
   'http://localhost:3000',
   'http://localhost:3001',
@@ -131,6 +136,12 @@ const allowedOrigins = process.env.NODE_ENV === 'production' ? [
   'http://127.0.0.1:5500'
   // Remove production domains from development
 ];
+
+// Allow custom origins from environment variable (for flexible deployment)
+if (process.env.CORS_ADDITIONAL_ORIGINS) {
+  const additionalOrigins = process.env.CORS_ADDITIONAL_ORIGINS.split(',').map(origin => origin.trim());
+  allowedOrigins = [...allowedOrigins, ...additionalOrigins];
+}
 
 console.log('🔒 CORS Allowed Origins:', allowedOrigins);
 

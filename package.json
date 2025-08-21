@@ -8,6 +8,7 @@
     "dev": "nodemon server.js",
     "admin": "node admin-manager.js",
     "admin-setup": "node admin-manager.js",
+    "validate-deployment": "node scripts/validate-deployment.js",
     "security-check": "npm audit && npx cyclonedx-npm ."
   },
   "dependencies": {
