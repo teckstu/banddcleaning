@@ -335,6 +335,11 @@ const authenticateAdmin = async (req, res, next) => {
 // ================
 app.get('/api/debug/cors', (req, res) => {
   const isProduction = process.env.NODE_ENV === 'production';
+  
+  if (isProduction && !req.headers['x-debug-mode']) {
+    return res.status(403).json({ error: 'Debug endpoints are disabled in production' });
+  }
+  
   const config = isProduction ? corsConfig.production : corsConfig.development;
   
   res.json({
@@ -498,9 +503,10 @@ app.post('/api/auth/logout', (req, res) => {
   res.clearCookie('jwt', {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
-    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax'
+    sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax',
+    path: '/'
   });
-  res.json({ success: true, message: 'Logged out successfully' });
+  res.json({ message: 'Logged out successfully' });
 });
 
 // Quote submission endpoint - updated for database
@@ -720,13 +726,12 @@ app.post('/api/admin/login', async (req, res) => {
 
     // Set JWT in HTTP-only cookie
     res.cookie('jwt', token, {
-      httpOnly: true, 
+      httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-      maxAge: 3600000 // 1 hour
-    });
-
-    res.json({
+      sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax',
+      maxAge: 3600000,
+      path: '/'
+    });    res.json({
       success: true,
       admin: {
         id: admin.id,
