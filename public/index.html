@@ -127,6 +127,7 @@
           display: flex;
           align-items: center;
           gap: var(--space-sm);
+          margin-right: auto;
         }
 
         .award-thumbnail {
@@ -141,6 +142,36 @@
           font-size: var(--text-sm);
           opacity: 0.9;
           margin-left: var(--space-xs);
+        }
+
+        nav {
+          margin-left: auto;
+        }
+
+        nav ul {
+          display: flex;
+          gap: var(--space-md);
+          align-items: center;
+          justify-content: flex-end;
+        }
+
+        nav a, 
+        .facebook-link,
+        .social-button {
+          color: white !important;
+          text-decoration: none;
+          font-weight: 500;
+          transition: var(--transition);
+          display: flex;
+          align-items: center;
+          gap: var(--space-xs);
+        }
+
+        nav a:hover, 
+        .facebook-link:hover,
+        .social-button:hover {
+          opacity: 0.9;
+          transform: translateY(-1px);
         }
 
         @media (max-width: 768px) {
@@ -873,6 +904,7 @@
       <div class="logo-container">
         <img src="./assets/businessaward.png" alt="Business Award Finalist" class="award-thumbnail">
         <span class="award-text">Lake Mac Business Excellence Awards Finalist 2023</span>
+      </div>
       </script>
       <nav>
         <ul>
