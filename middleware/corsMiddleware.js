@@ -3,27 +3,28 @@ const corsConfig = require('../config/corsConfig');
 
 // Enhanced CORS middleware with security logging
 const createCorsMiddleware = () => {
-  const isProduction = process.env.NODE_ENV === 'production';
-  
   // Parse allowed origins from environment variables
-  const prodOrigins = process.env.CORS_ALLOWED_ORIGINS_PROD ? 
+  const allowedOrigins = process.env.CORS_ALLOWED_ORIGINS_PROD ? 
     process.env.CORS_ALLOWED_ORIGINS_PROD.split(',') : 
     corsConfig.production.origins;
     
-  const devOrigins = process.env.CORS_ALLOWED_ORIGINS_DEV ? 
-    process.env.CORS_ALLOWED_ORIGINS_DEV.split(',') : 
-    corsConfig.development.origins;
-    
-  const config = isProduction ? 
-    { ...corsConfig.production, origins: prodOrigins } : 
-    { ...corsConfig.development, origins: devOrigins };
+  const config = { 
+    ...corsConfig.production, 
+    origins: allowedOrigins 
+  };
   
   return cors({
     origin: (origin, callback) => {
-      console.log(`🔍 CORS Request from origin: ${origin}`);
+      console.log(`🔍 CORS Request from origin: ${origin || 'undefined'}`);
+      
+      // Handle undefined origin (same-origin requests)
+      if (!origin) {
+        console.log('✅ CORS: Allowing same-origin request');
+        return callback(null, true);
+      }
       
       // Check if origin is in allowed list
-      if (origin && config.origins.includes(origin)) {
+      if (config.origins.includes(origin)) {
         console.log(`✅ CORS: Allowed origin: ${origin}`);
         return callback(null, true);
       }
@@ -34,6 +35,11 @@ const createCorsMiddleware = () => {
       
       return callback(new Error(`CORS policy: Origin ${origin} not allowed`), false);
     },
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+    exposedHeaders: ['Content-Range', 'X-Content-Range'],
+    maxAge: parseInt(process.env.CORS_MAX_AGE || '86400'),
     credentials: config.credentials,
     methods: config.methods,
     allowedHeaders: config.allowedHeaders,

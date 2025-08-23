@@ -589,7 +589,7 @@ app.post('/api/quotes', async (req, res) => {
     console.error('❌ Quote submission error:', error);
     res.status(500).json({ 
       error: 'Failed to submit quote request. Please try again.',
-      details: process.env.NODE_ENV === 'development' ? error.message : undefined
+      details: undefined
     });
   }
 });
@@ -961,13 +961,13 @@ const PORT = process.env.PORT || 3000;
 const rateLimitMax = process.env.NODE_ENV === 'production' ? 100 : 500;
 
 const server = app.listen(PORT, () => {
-  console.log(`🚀 Server running in ${process.env.NODE_ENV || 'development'} mode on port ${PORT}`);
+  console.log(`🚀 Server running on port ${PORT}`);
   
   console.log('🔒 Security Features Active:');
   console.log(`- CORS: ${corsConfig.production.origins.join(', ')}`);
   console.log(`- Rate Limiting: ${rateLimitMax} req/15min`);
   console.log(`- JWT: HS256 with 1h expiration`);
-  console.log(`- HTTPS Headers: ${process.env.NODE_ENV === 'production' ? 'Production' : 'Development'}`);
+  console.log(`- HTTPS Headers: Production`);
   
   console.log('📧 Email: Initializing...');
 });
