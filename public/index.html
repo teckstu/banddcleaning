@@ -57,42 +57,35 @@
         }
 
         header {
-          background: white;
-          box-shadow: var(--shadow-sm);
+          background: url('./assets/bndbackground.jpg') center/cover no-repeat;
           position: fixed;
           top: 0;
           left: 0;
           right: 0;
           z-index: 1000;
-          border-bottom: 2px solid var(--cream-dark);
+          height: 80px;
+          border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        header::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: rgba(0, 0, 0, 0.5);
+          z-index: -1;
         }
 
         .header-content {
           display: flex;
           align-items: center;
-          justify-content: space-between;
+          justify-content: flex-end;
           padding: 0.5rem 2rem;
-          flex-wrap: wrap;
-          gap: 1.5rem;
-        }
-
-        .logo-container {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        }
-
-        .logo {
-          height: 70px;
-          width: auto;
-          display: block;
-        }
-
-        .logo img {
           height: 100%;
-          width: auto;
-          display: block;
-          object-fit: cover;
+          position: relative;
+          z-index: 2;
         }
 
         .logo-text h1 {
@@ -123,15 +116,13 @@
 
         nav a {
           text-decoration: none;
-          color: var(--text-dark);
-          font-weight: 500;
-          padding: 0.5rem 1rem;
-          border-radius: var(--radius-sm);
-          transition: var(--transition);
+          color: white;
+          font-weight: 600;
           position: relative;
-        }
-
-        nav a::after {
+          padding: 0.5rem 0;
+          transition: color 0.3s ease;
+          text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+        }        nav a::after {
           content: '';
           position: absolute;
           bottom: -2px;
@@ -644,11 +635,6 @@
           console.log('Logo complete:', logo.complete);
         });
       </script>
-      <div class="logo-container">
-        <div class="logo">
-          <img src="./assets/logo.jpg" alt="B&D Cleaning Logo">
-        </div>
-      </div>
       <nav>
         <ul>
           <li><a href="#services">Services</a></li>
