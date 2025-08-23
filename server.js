@@ -2,21 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
-const bcrypt = requi
-app.use((req, res, next) => {
-  const origin = req.get('Origin');
-  
-  if (origin) {
-    console.log('📝 Cross-Origin Request:');
-    console.log('  Origin:', origin);
-    console.log('  Path:', req.path);
-    console.log('  Method:', req.method);
-    console.log('  Timestamp:', new Date().toISOString());
-  }
-  
-  next();
-});
-
+const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');

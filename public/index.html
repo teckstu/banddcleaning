@@ -198,6 +198,53 @@
           margin-bottom: 1rem;
         }
 
+        /* Reviews Section */
+        .reviews {
+          background: white;
+          padding: 4rem 0;
+          margin: 2rem 0;
+          border-radius: 20px;
+          box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .reviews h2 {
+          text-align: center;
+          color: #667eea;
+          margin-bottom: 2rem;
+        }
+
+        .reviews-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+          gap: 2rem;
+          padding: 0 2rem;
+        }
+
+        .review-card {
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          color: white;
+          padding: 2rem;
+          border-radius: 15px;
+          text-align: left;
+          transition: transform 0.3s ease;
+          position: relative;
+        }
+
+        .review-card:hover {
+          transform: translateY(-5px);
+        }
+
+        .review-text {
+          font-style: italic;
+          margin-bottom: 1.5rem;
+          line-height: 1.6;
+        }
+
+        .review-author {
+          font-weight: bold;
+          text-align: right;
+        }
+
         /* Quote Form */
         .quote-section {
           background: rgba(255, 255, 255, 0.95);
@@ -433,6 +480,44 @@
         <div class="service-card">
           <h3>🧽 Specialized Services</h3>
           <p>Carpet cleaning, window cleaning, pressure washing, and sanitization services</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Reviews Section -->
+  <section id="reviews" class="container">
+    <div class="reviews">
+      <h2>What Our Customers Say</h2>
+      <div class="reviews-grid">
+        <div class="review-card">
+          <p class="review-text">"Absolutely love the house Ty. Definitely one of the greatest cleans I've had."</p>
+          <p class="review-author">- Joanne</p>
+        </div>
+
+        <div class="review-card">
+          <p class="review-text">"Hello! Just wanted to touch base and say how happy we are with our cleans."</p>
+          <p class="review-author">- Tiarne</p>
+        </div>
+
+        <div class="review-card">
+          <p class="review-text">"Hey, just got home and absolutely so happy with it."</p>
+          <p class="review-author">- Shaeleigh</p>
+        </div>
+
+        <div class="review-card">
+          <p class="review-text">"B & D cleaning do a good job at a fair price will definitely use them in the future."</p>
+          <p class="review-author">- Jesse</p>
+        </div>
+
+        <div class="review-card">
+          <p class="review-text">"Highly recommend the team at B&D cleaning, always very professional, punctual and always going above and beyond to make my house sparkle ❤️"</p>
+          <p class="review-author">- Teah</p>
+        </div>
+
+        <div class="review-card">
+          <p class="review-text">"My previous cleaner was always rescheduling or just wouldn't turn up at all, I was never happy with my cleans and often found myself cleaning what I had just paid to be cleaned myself! That was all before I found the amazing team at B&D cleaning Co, professional and timely cleaners who get in and get the job done, nothing is too much for these guys and the standards of the cleans are amazing!!"</p>
+          <p class="review-author">- Taylah</p>
         </div>
       </div>
     </div>
