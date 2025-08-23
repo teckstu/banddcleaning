@@ -15,23 +15,27 @@ const createCorsMiddleware = () => {
   
   return cors({
     origin: (origin, callback) => {
-      // Production domain check
-      const expectedOrigin = 'https://banddcleaning-com-au.onrender.com';
+      // Handle requests with no origin (like mobile apps, REST tools, etc)
+      if (!origin) {
+        console.log('🔍 CORS: Browser direct request allowed');
+        return callback(null, true);
+      }
+
+      // Check against allowed origins
+      const isAllowed = config.origins.includes(origin);
       
       console.log(`🔍 CORS Request received:
-        - Origin: ${origin || 'undefined'}
-        - Expected: ${expectedOrigin}
-        - Match: ${origin === expectedOrigin ? 'Yes' : 'No'}`);
+        - Origin: ${origin}
+        - Allowed: ${isAllowed ? 'Yes' : 'No'}
+        - Available Origins: ${config.origins.join(', ')}`);
       
-      // Only allow the specific production domain
-      if (origin === expectedOrigin) {
-        console.log('✅ CORS: Request allowed from production domain');
+      if (isAllowed) {
+        console.log('✅ CORS: Request allowed from authorized domain');
         return callback(null, true);
       }
       
-      // Block all other requests
-      console.warn('❌ CORS: Request blocked - invalid origin');
-      return callback(new Error('CORS policy: Only production domain allowed'), false);
+      console.warn('❌ CORS: Request blocked - unauthorized origin');
+      return callback(new Error('CORS policy: Origin not allowed'), false);
     },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
