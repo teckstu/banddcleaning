@@ -207,6 +207,25 @@
           font-size: 1.2rem;
         }
 
+        .award-item {
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+        }
+
+        .award-thumbnail {
+          width: 40px;
+          height: 40px;
+          object-fit: cover;
+          border-radius: var(--radius-sm);
+          box-shadow: var(--shadow-sm);
+          transition: transform 0.2s ease;
+        }
+
+        .award-thumbnail:hover {
+          transform: scale(1.1);
+        }
+
         .social-links {
           display: flex;
           gap: 1rem;
@@ -715,8 +734,8 @@
           <a href="#services" class="cta-button secondary">Explore Services</a>
         </div>
         <div class="trust-indicators">
-          <div class="trust-item">
-            <i class="fas fa-award"></i>
+          <div class="trust-item award-item">
+            <img src="./assets/businessaward.png" alt="Local Business Awards Badge" class="award-thumbnail">
             <span>2025 Local Business Awards Finalist</span>
           </div>
           <div class="trust-item">
@@ -730,22 +749,6 @@
           <div class="trust-item">
             <i class="fas fa-calendar-check"></i>
             <span>Same-Day Quotes</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Awards Recognition Section -->
-  <section class="awards">
-    <div class="container">
-      <div class="awards-content">
-        <div class="award-badge">
-          <img src="./assets/local business award.jpg" alt="Local Business Awards Badge" class="award-image">
-          <div class="award-info">
-            <h3>Local Business Awards Finalist</h3>
-            <p>Recognized for Excellence in Professional Services</p>
-            <p class="award-year">2025</p>
           </div>
         </div>
       </div>
