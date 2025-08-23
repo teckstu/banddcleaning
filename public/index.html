@@ -71,27 +71,34 @@
           display: flex;
           align-items: center;
           justify-content: space-between;
-          padding: 0.5rem 2rem;
+          padding: 0.25rem 2rem;
           flex-wrap: wrap;
           gap: 1.5rem;
+          max-height: 90px; /* Constrain header height */
         }
 
         .logo-container {
           display: flex;
           align-items: center;
-          min-height: 50px; /* Debug */
+          padding: 0.5rem 0;
         }
 
         .logo {
-          height: 50px;
+          height: 80px; /* Increased height */
           width: auto;
           display: block;
+          transition: transform 0.2s ease; /* Smooth hover effect */
+        }
+
+        .logo:hover {
+          transform: scale(1.05); /* Slight zoom on hover */
         }
 
         .logo img {
           height: 100%;
           width: auto;
           display: block;
+          object-fit: contain;
         }
 
         .logo-text h1 {
@@ -152,6 +159,22 @@
         nav a:hover,
         nav a:focus {
           color: var(--purple-primary);
+        }
+
+        .facebook-link {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          color: #1877f2; /* Facebook blue */
+          transition: opacity 0.2s ease;
+        }
+
+        .facebook-link:hover {
+          opacity: 0.85;
+        }
+
+        .facebook-link i {
+          font-size: 1.2rem;
         }
 
         .social-links {
@@ -640,7 +663,9 @@
           <li><a href="#services">Services</a></li>
           <li><a href="#quote">Get Quote</a></li>
           <li><a href="#contact">Contact</a></li>
-          <li class="social-links">
+          <li><a href="https://www.facebook.com/profile.php?id=100092143831205" target="_blank" rel="noopener noreferrer" class="facebook-link">
+            <i class="fab fa-facebook-f"></i> Follow Us
+          </a></li>
             <a href="https://www.facebook.com/bandcleaningco" class="social-button" target="_blank" rel="noopener noreferrer">
               <i class="fab fa-facebook-f"></i>
               <span>Facebook</span>
@@ -855,11 +880,7 @@
         </div>
         
         <div class="contact-item">
-          <h3>🌟 Follow Us</h3>
-          <div class="social-links">
-            <a href="https://www.facebook.com/profile.php?id=100092143831205" target="_blank" rel="noopener">Facebook</a>
-            <a href="https://www.google.com/maps/place/B+%26+D+Cleaning+Services/@-32.731158,151.570658,15z/data=!4m2!3m1!1s0x0:0x4c5c5c5c5c5c5c5c" target="_blank" rel="noopener">Google Reviews</a>
-          </div>
+
         </div>
       </div>
     </div>
