@@ -20,6 +20,7 @@
     <style>
         /* Reset and Custom Properties */
         :root {
+          /* Colors */
           --purple-primary: #764ba2;
           --purple-light: #8b5cb8;
           --purple-dark: #5f3b85;
@@ -27,12 +28,35 @@
           --cream-dark: #f5eee4;
           --text-dark: #2d3436;
           --text-light: #636e72;
+          
+          /* Spacing */
+          --space-xs: clamp(0.5rem, 1vw, 0.75rem);
+          --space-sm: clamp(1rem, 2vw, 1.5rem);
+          --space-md: clamp(1.5rem, 3vw, 2rem);
+          --space-lg: clamp(2rem, 4vw, 3rem);
+          --space-xl: clamp(3rem, 6vw, 4rem);
+          
+          /* Typography */
+          --text-xs: clamp(0.75rem, 1.5vw, 0.875rem);
+          --text-sm: clamp(0.875rem, 1.75vw, 1rem);
+          --text-base: clamp(1rem, 2vw, 1.125rem);
+          --text-lg: clamp(1.125rem, 2.25vw, 1.25rem);
+          --text-xl: clamp(1.25rem, 2.5vw, 1.5rem);
+          --text-2xl: clamp(1.5rem, 3vw, 2rem);
+          --text-3xl: clamp(2rem, 4vw, 2.8rem);
+          
+          /* Layout */
+          --header-height: clamp(60px, 8vh, 80px);
+          --container-width: min(100% - 2rem, 1200px);
+          --section-spacing: clamp(2rem, 6vw, 4rem);
+          
+          /* Effects */
           --shadow-sm: 0 2px 8px rgba(0,0,0,0.1);
           --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
           --shadow-lg: 0 8px 24px rgba(0,0,0,0.12);
-          --radius-sm: 8px;
-          --radius-md: 12px;
-          --radius-lg: 20px;
+          --radius-sm: clamp(6px, 1vw, 8px);
+          --radius-md: clamp(8px, 1.5vw, 12px);
+          --radius-lg: clamp(12px, 2vw, 20px);
           --transition: all 0.3s ease;
         }
 
@@ -49,41 +73,40 @@
           line-height: 1.6;
           min-height: 100vh;
           margin: 0;
+          font-size: var(--text-base);
         }
 
         .container {
-          max-width: 1200px;
-          margin: 0 auto;
-          padding: 0 24px;
+          width: var(--container-width);
+          margin-inline: auto;
+          padding: 0 var(--space-sm);
         }
 
         header {
           background: url('./assets/bndbackground.jpg') center/cover no-repeat;
           width: 100%;
-          height: 80px;
+          height: var(--header-height);
           position: fixed;
           top: 0;
           left: 0;
           right: 0;
           z-index: 1000;
-          transition: box-shadow 0.3s ease;
+          transition: var(--transition);
         }
 
         header.scrolled {
-          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+          box-shadow: var(--shadow-md);
         }
 
         main {
-          padding-top: 80px;
+          padding-top: var(--header-height);
+          padding-bottom: var(--space-xl);
         }
 
         header::before {
           content: '';
           position: absolute;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
+          inset: 0;
           background: rgba(0, 0, 0, 0.6);
           z-index: -1;
         }
@@ -92,10 +115,38 @@
           display: flex;
           align-items: center;
           justify-content: space-between;
-          padding: 0.5rem 2rem;
+          padding: var(--space-xs) var(--space-md);
           height: 100%;
           position: relative;
           z-index: 2;
+          max-width: var(--container-width);
+          margin-inline: auto;
+        }
+
+        .logo-container {
+          display: flex;
+          align-items: center;
+          gap: var(--space-sm);
+        }
+
+        .award-thumbnail {
+          height: calc(var(--header-height) * 0.6);
+          width: auto;
+          border-radius: var(--radius-sm);
+          margin-right: var(--space-sm);
+        }
+
+        .award-text {
+          color: white;
+          font-size: var(--text-sm);
+          opacity: 0.9;
+          margin-left: var(--space-xs);
+        }
+
+        @media (max-width: 768px) {
+          .award-text {
+            display: none;
+          }
         }
 
         .header-award {
@@ -650,45 +701,46 @@
         /* Contact Info */
         .contact-info {
           background: rgba(255, 255, 255, 0.95);
-          padding: 3rem 2rem;
-          border-radius: 20px;
-          margin: 2rem 0;
+          padding: var(--space-xl) var(--space-lg);
+          border-radius: var(--radius-lg);
+          margin: var(--section-spacing) 0;
           text-align: center;
-          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+          box-shadow: var(--shadow-lg);
+          width: min(100%, 1200px);
+          margin-inline: auto;
         }
 
         .contact-info h2 {
           font-family: 'Dancing Script', cursive;
-          font-size: 2.8rem;
+          font-size: var(--text-3xl);
           color: #667eea;
-          margin-bottom: 1.5rem;
+          margin-bottom: var(--space-md);
           text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
         }
 
         .contact-details {
           display: grid;
           grid-template-columns: repeat(2, 1fr);
-          gap: 2rem;
-          margin-top: 2rem;
-          max-width: 1000px;
-          margin-left: auto;
-          margin-right: auto;
+          gap: var(--space-lg);
+          margin-top: var(--space-lg);
+          width: min(100%, 1000px);
+          margin-inline: auto;
         }
 
         .contact-row {
           grid-column: 1 / -1;
           display: grid;
-          grid-template-columns: repeat(2, 1fr);
-          gap: 2rem;
+          grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+          gap: var(--space-md);
         }
 
         .contact-row.secondary {
-          margin-top: 2rem;
+          margin-top: var(--space-lg);
         }
 
         .contact-item {
-          padding: 1.5rem;
-          transition: transform 0.3s ease;
+          padding: var(--space-md);
+          transition: var(--transition);
         }
 
         .contact-item:hover {
@@ -697,9 +749,43 @@
 
         .contact-item h3 {
           font-family: 'Dancing Script', cursive;
-          font-size: 2rem;
+          font-size: var(--text-2xl);
           color: #667eea;
-          margin-bottom: 1rem;
+          margin-bottom: var(--space-sm);
+        }
+
+        .contact-button {
+          width: min(100%, 300px);
+          padding: var(--space-sm) var(--space-md);
+          font-size: var(--text-base);
+        }
+
+        @media (max-width: 768px) {
+          .contact-details {
+            grid-template-columns: 1fr;
+          }
+          
+          .contact-row {
+            grid-template-columns: 1fr;
+          }
+
+          .contact-button {
+            width: 100%;
+          }
+
+          .contact-info {
+            padding: var(--space-lg) var(--space-md);
+          }
+        }
+
+        @media (max-width: 480px) {
+          .contact-info h2 {
+            font-size: var(--text-2xl);
+          }
+
+          .contact-item h3 {
+            font-size: var(--text-xl);
+          }
         }
 
         @media (max-width: 768px) {
@@ -784,14 +870,9 @@
 <header>
   <div class="container">
     <div class="header-content">
-      <script>
-        window.addEventListener('load', function() {
-          const logo = document.querySelector('.logo img');
-          console.log('Logo natural size:', logo.naturalWidth, 'x', logo.naturalHeight);
-          console.log('Logo display size:', logo.offsetWidth, 'x', logo.offsetHeight);
-          console.log('Logo src:', logo.src);
-          console.log('Logo complete:', logo.complete);
-        });
+      <div class="logo-container">
+        <img src="./assets/businessaward.png" alt="Business Award Finalist" class="award-thumbnail">
+        <span class="award-text">Lake Mac Business Excellence Awards Finalist 2023</span>
       </script>
       <nav>
         <ul>
