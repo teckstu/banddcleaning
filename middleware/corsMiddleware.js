@@ -20,33 +20,19 @@ const createCorsMiddleware = () => {
   
   return cors({
     origin: (origin, callback) => {
-      console.log(`🔍 CORS Request from origin: ${origin || 'null'}`);
-      
-      // Allow requests with no origin (mobile apps, curl, Postman)
-      if (!origin) {
-        console.log('🔍 CORS: Allowing null origin request');
-        return callback(null, true);
-      }
+      console.log(`🔍 CORS Request from origin: ${origin}`);
       
       // Check if origin is in allowed list
-      if (config.origins.includes(origin)) {
+      if (origin && config.origins.includes(origin)) {
         console.log(`✅ CORS: Allowed origin: ${origin}`);
         return callback(null, true);
       }
       
       // Security logging for blocked requests
       console.warn(`❌ CORS: Blocked origin: ${origin}`);
-      console.warn(`🔍 CORS: Request origin "${origin}" is not in the allowed list:`);
       console.warn('🔍 CORS Allowed origins:', JSON.stringify(config.origins));
       
-      // In production, strict security
-      if (isProduction) {
-        return callback(new Error(`CORS policy: Origin ${origin} not allowed`), false);
-      }
-      
-      // In development, allow for easier testing
-      console.warn('⚠️ CORS: Allowing in development mode only');
-      return callback(null, true);
+      return callback(new Error(`CORS policy: Origin ${origin} not allowed`), false);
     },
     credentials: config.credentials,
     methods: config.methods,
