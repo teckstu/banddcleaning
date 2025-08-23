@@ -667,8 +667,22 @@
 
         .contact-details {
           display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+          grid-template-columns: repeat(2, 1fr);
           gap: 2rem;
+          margin-top: 2rem;
+          max-width: 1000px;
+          margin-left: auto;
+          margin-right: auto;
+        }
+
+        .contact-row {
+          grid-column: 1 / -1;
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 2rem;
+        }
+
+        .contact-row.secondary {
           margin-top: 2rem;
         }
 
@@ -686,6 +700,12 @@
           font-size: 2rem;
           color: #667eea;
           margin-bottom: 1rem;
+        }
+
+        @media (max-width: 768px) {
+          .contact-row {
+            grid-template-columns: 1fr;
+          }
         }
 
         .contact-button {
@@ -983,32 +1003,35 @@
       <p>Get in touch with B & D Cleaning Co for all your cleaning needs.</p>
       
       <div class="contact-details">
-        <div class="contact-item">
-          <h3>Call Us</h3>
-          <a href="tel:0448 637 041" class="contact-button">
-            <i class="fas fa-phone-alt"></i>
-            0448 637 041
-          </a>
-        </div>
-        
-        <div class="contact-item">
-          <h3>Email Us</h3>
-          <a href="mailto:bandcleaningco@gmail.com" class="contact-button">
-            <i class="fas fa-envelope"></i>
-            bandcleaningco@gmail.com
-          </a>
-        </div>
-        
-        <div class="contact-item">
-          <h3>Service Areas</h3>
-          <div class="contact-button">
-            <i class="fas fa-map-marker-alt"></i>
-            Rutherford, Maitland & Beyond
+        <div class="contact-row">
+          <div class="contact-item">
+            <h3>Call Us</h3>
+            <a href="tel:0448 637 041" class="contact-button">
+              <i class="fas fa-phone-alt"></i>
+              0448 637 041
+            </a>
+          </div>
+          
+          <div class="contact-item">
+            <h3>Email Us</h3>
+            <a href="mailto:bandcleaningco@gmail.com" class="contact-button">
+              <i class="fas fa-envelope"></i>
+              bandcleaningco@gmail.com
+            </a>
           </div>
         </div>
-        
-        <div class="contact-item">
-          <h3>Business Hours</h3>
+
+        <div class="contact-row secondary">
+          <div class="contact-item">
+            <h3>Service Areas</h3>
+            <div class="contact-button">
+              <i class="fas fa-map-marker-alt"></i>
+              Rutherford, Maitland & Beyond
+            </div>
+          </div>
+          
+          <div class="contact-item">
+            <h3>Business Hours</h3>
           <p><strong>Monday - Friday:</strong> 8:00 AM - 6:00 PM</p>
           <p><strong>Saturday:</strong> 9:00 AM - 4:00 PM</p>
           <p><strong>Sunday:</strong> By appointment only</p>
