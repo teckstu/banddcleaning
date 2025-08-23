@@ -1,5 +1,6 @@
 const { Sequelize, DataTypes } = require('sequelize');
 const path = require('path');
+const bcrypt = require('bcryptjs');
 
 // Initialize SQLite database
 const sequelize = new Sequelize({
@@ -161,40 +162,46 @@ const Admin = sequelize.define('Admin', {
 // Initialize database
 const initializeDatabase = async () => {
   try {
-    // Test connection
     await sequelize.authenticate();
     console.log('✅ Database connection established');
-
-    // FIXED: Use force: false and alter: false to prevent migration loop
-    await sequelize.sync({ 
-      force: false,    // Don't drop tables
-      alter: false     // Don't alter existing tables
+    
+    // Sync models with database
+    await sequelize.sync({
+      alter: process.env.DB_ALTER_TABLES === 'true',
+      force: process.env.DB_FORCE_SYNC === 'true'
     });
-    console.log('✅ Database models synchronized');
+    
+    // Create default admin if it doesn't exist
+    const adminEmail = process.env.DEFAULT_ADMIN_EMAIL;
+    const adminPassword = process.env.DEFAULT_ADMIN_PASSWORD;
+    const adminName = process.env.DEFAULT_ADMIN_NAME;
 
-    // Create default admin if none exists
-    const adminCount = await Admin.count();
-    if (adminCount === 0) {
-      const bcrypt = require('bcryptjs');
-      const defaultPassword = 'admin123'; // Change this!
-      const passwordHash = await bcrypt.hash(defaultPassword, 12);
-
-      await Admin.create({
-        email: 'bandcleaningco@gmail.com',
-        password_hash: passwordHash,
-        name: 'Admin User',
-        role: 'admin'
-      });
-
-      console.log('✅ Default admin user created');
-      console.log('📧 Email: bandcleaningco@gmail.com');
-      console.log('🔑 Password: admin123 (CHANGE THIS!)');
+    if (!adminEmail || !adminPassword) {
+      console.error('❌ Missing DEFAULT_ADMIN_EMAIL or DEFAULT_ADMIN_PASSWORD in environment');
+      return false;
     }
 
-    return { sequelize, Quote, Admin };
-
+    const existingAdmin = await Admin.findOne({ where: { email: adminEmail } });
+    
+    if (!existingAdmin) {
+      console.log('Creating default admin account...');
+      const passwordHash = await bcrypt.hash(adminPassword, parseInt(process.env.BCRYPT_ROUNDS || '12'));
+      
+      await Admin.create({
+        email: adminEmail,
+        password_hash: passwordHash,
+        name: adminName || 'Administrator',
+        role: 'admin',
+        is_active: true
+      });
+      
+      console.log('✅ Default admin account created');
+    }
+    
+    console.log('✅ Database models synchronized');
+    return true;
   } catch (error) {
-    console.error('❌ Database initialization failed:', error.message);
+    console.error('❌ Database initialization error:', error);
     throw error;
   }
 };
