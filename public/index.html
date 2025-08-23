@@ -73,18 +73,64 @@
           left: 0;
           right: 0;
           bottom: 0;
-          background: rgba(0, 0, 0, 0.5);
+          background: rgba(0, 0, 0, 0.6);
           z-index: -1;
         }
 
         .header-content {
           display: flex;
           align-items: center;
-          justify-content: flex-end;
+          justify-content: space-between;
           padding: 0.5rem 2rem;
           height: 100%;
           position: relative;
           z-index: 2;
+        }
+
+        /* Modern Marketing Styles */
+        .hero {
+          min-height: 80vh;
+          display: flex;
+          align-items: center;
+          background: linear-gradient(135deg, rgba(118, 75, 162, 0.05) 0%, rgba(250, 246, 241, 0.1) 100%);
+          padding: 6rem 0;
+          position: relative;
+        }
+
+        .hero-content {
+          max-width: 1000px;
+          margin: 0 auto;
+          text-align: center;
+          padding: 0 20px;
+        }
+
+        .hero h1 {
+          font-size: 3.5rem;
+          line-height: 1.2;
+          margin-bottom: 1.5rem;
+          color: var(--purple-dark);
+          font-weight: 700;
+          animation: fadeInUp 1s ease;
+        }
+
+        .hero-subtitle {
+          font-size: 1.25rem;
+          color: var(--text-light);
+          margin-bottom: 2rem;
+          animation: fadeInUp 1s ease 0.2s;
+          opacity: 0;
+          animation-fill-mode: forwards;
+        }
+
+        @keyframes fadeInUp {
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
         }
 
         .logo-text h1 {
@@ -661,9 +707,48 @@
   <!-- Hero Section -->
   <section class="hero">
     <div class="container">
-      <h2>Premium Cleaning Services</h2>
-      <p>Professional, reliable, and thorough cleaning for your home and business</p>
-      <a href="#quote" class="cta-button">Get Your Free Quote</a>
+      <div class="hero-content">
+        <h1>Transform Your Space with<br>Professional Cleaning Excellence</h1>
+        <p class="hero-subtitle">Trusted by over 500+ households in Rutherford & Hunter Valley</p>
+        <div class="cta-group">
+          <a href="#quote" class="cta-button primary">Get Your Free Quote</a>
+          <a href="#services" class="cta-button secondary">Explore Services</a>
+        </div>
+        <div class="trust-indicators">
+          <div class="trust-item">
+            <i class="fas fa-award"></i>
+            <span>2025 Local Business Awards Finalist</span>
+          </div>
+          <div class="trust-item">
+            <i class="fas fa-star"></i>
+            <span>4.9/5 Rating</span>
+          </div>
+          <div class="trust-item">
+            <i class="fas fa-check-circle"></i>
+            <span>Fully Insured</span>
+          </div>
+          <div class="trust-item">
+            <i class="fas fa-calendar-check"></i>
+            <span>Same-Day Quotes</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Awards Recognition Section -->
+  <section class="awards">
+    <div class="container">
+      <div class="awards-content">
+        <div class="award-badge">
+          <img src="./assets/local business award.jpg" alt="Local Business Awards Badge" class="award-image">
+          <div class="award-info">
+            <h3>Local Business Awards Finalist</h3>
+            <p>Recognized for Excellence in Professional Services</p>
+            <p class="award-year">2025</p>
+          </div>
+        </div>
+      </div>
     </div>
   </section>
 
