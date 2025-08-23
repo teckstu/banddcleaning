@@ -9,8 +9,33 @@
     <link rel="icon" href="/favicon.ico" type="image/x-icon">
     <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
     
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
-        /* Reset */
+        /* Reset and Custom Properties */
+        :root {
+          --purple-primary: #764ba2;
+          --purple-light: #8b5cb8;
+          --purple-dark: #5f3b85;
+          --cream: #faf6f1;
+          --cream-dark: #f5eee4;
+          --text-dark: #2d3436;
+          --text-light: #636e72;
+          --shadow-sm: 0 2px 8px rgba(0,0,0,0.1);
+          --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+          --shadow-lg: 0 8px 24px rgba(0,0,0,0.12);
+          --radius-sm: 8px;
+          --radius-md: 12px;
+          --radius-lg: 20px;
+          --transition: all 0.3s ease;
+        }
+
         * {
           margin: 0;
           padding: 0;
@@ -18,9 +43,9 @@
         }
 
         body {
-          font-family: 'Arial', sans-serif;
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-          color: #333;
+          font-family: 'Poppins', sans-serif;
+          background-color: var(--cream);
+          color: var(--text-dark);
           line-height: 1.6;
           min-height: 100vh;
         }
@@ -28,47 +53,60 @@
         .container {
           max-width: 1200px;
           margin: 0 auto;
-          padding: 0 20px;
+          padding: 0 24px;
         }
 
         header {
-          background: rgba(255, 255, 255, 0.95);
-          backdrop-filter: blur(10px);
-          box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+          background: white;
+          box-shadow: var(--shadow-sm);
           position: fixed;
           top: 0;
           left: 0;
           right: 0;
           z-index: 1000;
+          border-bottom: 2px solid var(--cream-dark);
         }
 
         .header-content {
           display: flex;
           align-items: center;
           justify-content: space-between;
-          padding: 1rem 2rem;
+          padding: 1.2rem 2rem;
           flex-wrap: wrap;
-          gap: 1rem;
+          gap: 1.5rem;
         }
 
         .logo-container {
           display: flex;
           align-items: center;
-          gap: 15px;
+          gap: 18px;
         }
 
         .logo {
-          width: 60px;
-          height: 60px;
+          width: 65px;
+          height: 65px;
           border-radius: 50%;
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          background: var(--purple-primary);
           display: flex;
           align-items: center;
           justify-content: center;
           color: white;
           font-size: 1.5rem;
-          font-weight: bold;
-          border: 3px solid #667eea;
+          font-weight: 600;
+          box-shadow: var(--shadow-md);
+          position: relative;
+          overflow: hidden;
+        }
+
+        .logo::after {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 100%);
+          pointer-events: none;
         }
 
         .logo-text h1 {
@@ -85,29 +123,82 @@
         nav ul {
           display: flex;
           list-style: none;
-          gap: 2rem;
+          gap: 2.5rem;
+          align-items: center;
+        }
+
+        nav li {
+          position: relative;
         }
 
         nav li:focus-within {
-          outline: 2px solid #667eea;
-          outline-offset: 2px;
+          outline: none;
         }
 
         nav a {
           text-decoration: none;
-          color: #667eea;
-          font-weight: 600;
+          color: var(--text-dark);
+          font-weight: 500;
           padding: 0.5rem 1rem;
-          border-radius: 25px;
-          transition: all 0.3s ease;
+          border-radius: var(--radius-sm);
+          transition: var(--transition);
+          position: relative;
+        }
+
+        nav a::after {
+          content: '';
+          position: absolute;
+          bottom: -2px;
+          left: 0;
+          width: 100%;
+          height: 2px;
+          background: var(--purple-primary);
+          transform: scaleX(0);
+          transform-origin: right;
+          transition: transform 0.3s ease;
+        }
+
+        nav a:hover::after,
+        nav a:focus::after {
+          transform: scaleX(1);
+          transform-origin: left;
         }
 
         nav a:hover,
         nav a:focus {
-          background: #667eea;
+          color: var(--purple-primary);
+        }
+
+        .social-links {
+          display: flex;
+          gap: 1rem;
+          margin-left: 1rem;
+        }
+
+        .social-button {
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          background: white;
+          color: var(--purple-primary);
+          padding: 0.7rem 1.2rem;
+          border-radius: var(--radius-sm);
+          text-decoration: none;
+          font-weight: 500;
+          transition: var(--transition);
+          border: 2px solid var(--purple-primary);
+        }
+
+        .social-button:hover,
+        .social-button:focus {
+          background: var(--purple-primary);
           color: white;
           transform: translateY(-2px);
-          outline: none;
+          box-shadow: var(--shadow-md);
+        }
+
+        .social-button i {
+          font-size: 1.1rem;
         }
 
         main {
@@ -117,39 +208,92 @@
 
         .hero {
           text-align: center;
-          padding: 4rem 0;
+          padding: 6rem 0 4rem;
+          background: linear-gradient(135deg, var(--purple-primary) 0%, var(--purple-dark) 100%);
           color: white;
+          position: relative;
+          overflow: hidden;
+          border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+          box-shadow: var(--shadow-lg);
+        }
+
+        .hero::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: url('assets/pattern.png') repeat;
+          opacity: 0.1;
+          pointer-events: none;
+        }
+
+        .hero-content {
+          position: relative;
+          z-index: 1;
+          max-width: 800px;
+          margin: 0 auto;
+          padding: 0 1rem;
         }
 
         .hero h2 {
-          font-size: 3rem;
-          margin-bottom: 1rem;
-          text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+          font-size: 3.5rem;
+          margin-bottom: 1.5rem;
+          font-weight: 700;
+          line-height: 1.2;
+          text-shadow: var(--shadow-sm);
         }
 
         .hero p {
-          font-size: 1.2rem;
-          margin-bottom: 2rem;
-          opacity: 0.9;
+          font-size: 1.25rem;
+          margin-bottom: 2.5rem;
+          opacity: 0.95;
+          font-weight: 300;
         }
 
         .cta-button {
-          display: inline-block;
+          display: inline-flex;
+          align-items: center;
+          gap: 10px;
           background: white;
-          color: #667eea;
-          padding: 1rem 2rem;
+          color: var(--purple-primary);
+          padding: 1.2rem 2.5rem;
           text-decoration: none;
-          border-radius: 50px;
-          font-weight: bold;
-          box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-          transition: all 0.3s ease;
+          border-radius: var(--radius-md);
+          font-weight: 600;
+          font-size: 1.1rem;
+          box-shadow: var(--shadow-md);
+          transition: var(--transition);
+          position: relative;
+          overflow: hidden;
+        }
+
+        .cta-button::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 100%);
+          transform: translateX(-100%);
+          transition: transform 0.6s ease;
+        }
+
+        .cta-button:hover::before {
+          transform: translateX(0);
         }
 
         .cta-button:hover,
         .cta-button:focus {
           transform: translateY(-3px);
-          box-shadow: 0 6px 20px rgba(0,0,0,0.3);
-          outline: none;
+          box-shadow: var(--shadow-lg);
+          color: var(--purple-dark);
+        }
+
+        .cta-button i {
+          font-size: 1.2rem;
         }
 
         /* Services Section */
@@ -181,21 +325,56 @@
         }
 
         .service-card {
-          background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-          color: white;
-          padding: 2rem;
-          border-radius: 15px;
+          background: white;
+          color: var(--text-dark);
+          padding: 2.5rem;
+          border-radius: var(--radius-md);
           text-align: center;
+          transition: var(--transition);
+          border: 1px solid var(--cream-dark);
+          position: relative;
+          overflow: hidden;
+        }
+
+        .service-card::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 4px;
+          background: var(--purple-primary);
+          transform: scaleX(0);
+          transform-origin: left;
           transition: transform 0.3s ease;
         }
 
         .service-card:hover {
           transform: translateY(-5px);
+          box-shadow: var(--shadow-md);
+        }
+
+        .service-card:hover::before {
+          transform: scaleX(1);
+        }
+
+        .service-card i {
+          font-size: 2.5rem;
+          color: var(--purple-primary);
+          margin-bottom: 1.5rem;
         }
 
         .service-card h3 {
           font-size: 1.5rem;
           margin-bottom: 1rem;
+          color: var(--text-dark);
+          font-weight: 600;
+        }
+
+        .service-card p {
+          color: var(--text-light);
+          font-size: 1.1rem;
+          line-height: 1.6;
         }
 
         /* Reviews Section */
@@ -446,6 +625,16 @@
           <li><a href="#services">Services</a></li>
           <li><a href="#quote">Get Quote</a></li>
           <li><a href="#contact">Contact</a></li>
+          <li class="social-links">
+            <a href="https://www.facebook.com/bandcleaningco" class="social-button" target="_blank" rel="noopener noreferrer">
+              <i class="fab fa-facebook-f"></i>
+              <span>Facebook</span>
+            </a>
+            <a href="https://www.google.com/search?q=B%26D+Cleaning+Co+reviews" class="social-button" target="_blank" rel="noopener noreferrer">
+              <i class="fab fa-google"></i>
+              <span>Reviews</span>
+            </a>
+          </li>
         </ul>
       </nav>
     </div>

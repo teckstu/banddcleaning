@@ -22,10 +22,38 @@ const { createCorsMiddleware, corsSecurityMiddleware } = require('./middleware/c
 const app = express();
 
 // =====================
-// MIDDLEWARE CONFIGURATION
+// SECURITY CONFIGURATION
 // =====================
-// Apply security middleware early in the stack
-app.use(helmet());
+// Strict security headers
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "'unsafe-inline'"],
+      styleSrc: ["'self'", "'unsafe-inline'"],
+      imgSrc: ["'self'", "data:", "https:"],
+      connectSrc: ["'self'", "https://banddcleaning-com-au.onrender.com"],
+      fontSrc: ["'self'", "https:"],
+      objectSrc: ["'none'"],
+      mediaSrc: ["'self'"],
+      frameSrc: ["'none'"],
+    },
+  },
+  crossOriginEmbedderPolicy: true,
+  crossOriginOpenerPolicy: true,
+  crossOriginResourcePolicy: { policy: "same-site" },
+  dnsPrefetchControl: true,
+  frameguard: { action: "deny" },
+  hsts: { maxAge: 31536000, includeSubDomains: true, preload: true },
+  ieNoOpen: true,
+  noSniff: true,
+  originAgentCluster: true,
+  permittedCrossDomainPolicies: { permittedPolicies: "none" },
+  referrerPolicy: { policy: "strict-origin-when-cross-origin" },
+  xssFilter: true,
+}));
+
+// Basic security middleware
 app.use(compression());
 app.use(express.json({ limit: '10kb' }));
 app.use(express.urlencoded({ extended: true, limit: '10kb' }));
@@ -34,7 +62,7 @@ app.use(mongoSanitize());
 app.use(xss());
 app.use(hpp());
 
-// Apply CORS middleware
+// CORS configuration - strict production settings
 app.use(createCorsMiddleware());
 app.use(corsSecurityMiddleware);
 
