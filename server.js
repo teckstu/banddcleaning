@@ -22,6 +22,23 @@ const { createCorsMiddleware, corsSecurityMiddleware } = require('./middleware/c
 const app = express();
 
 // =====================
+// MIDDLEWARE CONFIGURATION
+// =====================
+// Apply security middleware early in the stack
+app.use(helmet());
+app.use(compression());
+app.use(express.json({ limit: '10kb' }));
+app.use(express.urlencoded({ extended: true, limit: '10kb' }));
+app.use(cookieParser());
+app.use(mongoSanitize());
+app.use(xss());
+app.use(hpp());
+
+// Apply CORS middleware
+app.use(createCorsMiddleware());
+app.use(corsSecurityMiddleware);
+
+// =====================
 // DATABASE INITIALIZATION
 // =====================
 let dbInitialized = false;

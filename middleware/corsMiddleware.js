@@ -4,7 +4,19 @@ const corsConfig = require('../config/corsConfig');
 // Enhanced CORS middleware with security logging
 const createCorsMiddleware = () => {
   const isProduction = process.env.NODE_ENV === 'production';
-  const config = isProduction ? corsConfig.production : corsConfig.development;
+  
+  // Parse allowed origins from environment variables
+  const prodOrigins = process.env.CORS_ALLOWED_ORIGINS_PROD ? 
+    process.env.CORS_ALLOWED_ORIGINS_PROD.split(',') : 
+    corsConfig.production.origins;
+    
+  const devOrigins = process.env.CORS_ALLOWED_ORIGINS_DEV ? 
+    process.env.CORS_ALLOWED_ORIGINS_DEV.split(',') : 
+    corsConfig.development.origins;
+    
+  const config = isProduction ? 
+    { ...corsConfig.production, origins: prodOrigins } : 
+    { ...corsConfig.development, origins: devOrigins };
   
   return cors({
     origin: (origin, callback) => {
