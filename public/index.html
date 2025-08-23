@@ -79,19 +79,19 @@
         .logo-container {
           display: flex;
           align-items: center;
+          min-height: 50px; /* Debug */
         }
 
         .logo {
           height: 50px;
-          display: flex;
-          align-items: center;
+          width: auto;
+          display: block;
         }
 
         .logo img {
           height: 100%;
           width: auto;
           display: block;
-          max-width: none;
         }
 
         .logo-text h1 {
@@ -618,9 +618,20 @@
 <header>
   <div class="container">
     <div class="header-content">
+      <script>
+        window.addEventListener('load', function() {
+          const logo = document.querySelector('.logo img');
+          console.log('Logo natural size:', logo.naturalWidth, 'x', logo.naturalHeight);
+          console.log('Logo display size:', logo.offsetWidth, 'x', logo.offsetHeight);
+          console.log('Logo src:', logo.src);
+          console.log('Logo complete:', logo.complete);
+        });
+      </script>
       <div class="logo-container">
         <div class="logo">
-          <img src="assets/logo.jpg" alt="B&D Cleaning Logo">
+          <img 
+            src="./assets/logo.jpg" 
+            alt="B&D Cleaning Logo">
         </div
         </div>
       </div>
