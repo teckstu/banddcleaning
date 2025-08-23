@@ -86,27 +86,15 @@
           width: 65px;
           height: 65px;
           border-radius: 50%;
-          background: var(--purple-primary);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          color: white;
-          font-size: 1.5rem;
-          font-weight: 600;
+          overflow: hidden;
           box-shadow: var(--shadow-md);
           position: relative;
-          overflow: hidden;
         }
 
-        .logo::after {
-          content: '';
-          position: absolute;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 100%);
-          pointer-events: none;
+        .logo img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
         }
 
         .logo-text h1 {
@@ -465,14 +453,34 @@
         .form-group textarea,
         .form-group select {
           width: 100%;
-          padding: 1rem;
-          border: 2px solid #e1e8ed;
-          border-radius: 10px;
+          padding: 0.8rem;
+          border: 1px solid var(--cream-dark);
+          border-radius: var(--radius-sm);
           font-size: 1rem;
-          transition: border-color 0.3s ease;
+          appearance: none;
+          background: white url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23764ba2' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>") no-repeat right 1rem center;
+          background-size: 1em;
+          cursor: pointer;
         }
 
-        .form-group input:focus,
+        .form-group select:focus {
+          outline: none;
+          border-color: var(--purple-primary);
+          box-shadow: 0 0 0 3px rgba(118, 75, 162, 0.1);
+        }
+
+        .form-group select optgroup {
+          font-weight: 600;
+          color: var(--purple-primary);
+          background: var(--cream);
+        }
+
+        .form-group select option {
+          font-weight: normal;
+          color: var(--text-dark);
+          background: white;
+          padding: 0.5rem;
+        }        .form-group input:focus,
         .form-group textarea:focus,
         .form-group select:focus {
           outline: none;
@@ -614,7 +622,9 @@
   <div class="container">
     <div class="header-content">
       <div class="logo-container">
-        <div class="logo">B&D</div>
+        <div class="logo">
+          <img src="assets/logo.png.jpg" alt="B&D Cleaning Logo">
+        </div>
         <div class="logo-text">
           <h1>B & D Cleaning</h1>
           <p>Professional Cleaning Services</p>
@@ -739,14 +749,22 @@
             <label for="serviceType">Service Type *</label>
             <select id="serviceType" name="serviceType" required>
                 <option value="">Select a service...</option>
-                <option value="residential_cleaning">Residential Cleaning</option>
-                <option value="commercial_cleaning">Commercial Cleaning</option>
-                <option value="end_of_lease">End of Lease Cleaning</option>
-                <option value="deep_cleaning">Deep Cleaning</option>
-                <option value="carpet_cleaning">Carpet Cleaning</option>
-                <option value="window_cleaning">Window Cleaning</option>
-                <option value="pressure_washing">Pressure Washing</option>
-                <option value="sanitization">Sanitization Services</option>
+                <optgroup label="Regular Services">
+                    <option value="residential_cleaning">Residential Cleaning</option>
+                    <option value="commercial_cleaning">Commercial Cleaning</option>
+                </optgroup>
+                <optgroup label="Special Services">
+                    <option value="end_of_lease">End of Lease Cleaning</option>
+                    <option value="deep_cleaning">Deep Cleaning</option>
+                    <option value="carpet_cleaning">Carpet Cleaning</option>
+                    <option value="window_cleaning">Window Cleaning</option>
+                </optgroup>
+                <optgroup label="Additional Services">
+                    <option value="pressure_washing">Pressure Washing</option>
+                    <option value="sanitization">Sanitization Services</option>
+                    <option value="lawn_garden">Lawn & Garden Maintenance</option>
+                    <option value="pest_control">Pest Control</option>
+                </optgroup>
             </select>
           </div>
         </div>
@@ -757,15 +775,20 @@
             <input type="date" id="preferredDate" name="preferredDate" min="" />
           </div>
           <div class="form-group">
-            <label for="frequency">Frequency</label>
-            <select id="frequency" name="frequency">
-              <option value="general-clean">One-time general cleaning</option>
-              <option value="deep-clean">Deep cleaning</option>
-              <option value="carpet-cleaning">Carpet cleaning</option>
-              <option value="monthly">Pest control</option>
-              <option value="end-of-lease">End of Lease</option>
-              <option value="lawn-garden">Lawn & Garden Maintenance</option>
-              <option value="emergency">Emergency</option>
+            <label for="frequency">Service Frequency</label>
+            <select id="frequency" name="frequency" required>
+                <option value="">Select frequency...</option>
+                <optgroup label="Regular Schedule">
+                    <option value="weekly">Weekly</option>
+                    <option value="fortnightly">Fortnightly</option>
+                    <option value="monthly">Monthly</option>
+                    <option value="quarterly">Quarterly</option>
+                </optgroup>
+                <optgroup label="Flexible Options">
+                    <option value="once">One-Time Service</option>
+                    <option value="emergency">Emergency/Urgent Service</option>
+                    <option value="custom">Custom Schedule</option>
+                </optgroup>
             </select>
           </div>
         </div>
