@@ -48,6 +48,7 @@
           color: var(--text-dark);
           line-height: 1.6;
           min-height: 100vh;
+          margin: 0;
         }
 
         .container {
@@ -58,13 +59,11 @@
 
         header {
           background: url('./assets/bndbackground.jpg') center/cover no-repeat;
-          position: fixed;
-          top: 0;
-          left: 0;
-          right: 0;
-          z-index: 1000;
+          width: 100%;
           height: 80px;
-          border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+          position: relative;
+          z-index: 1000;
+          margin-bottom: 2rem;
         }
 
         header::before {
