@@ -71,7 +71,7 @@
           display: flex;
           align-items: center;
           justify-content: space-between;
-          padding: 1.2rem 2rem;
+          padding: 0.5rem 2rem;
           flex-wrap: wrap;
           gap: 1.5rem;
         }
@@ -79,22 +79,18 @@
         .logo-container {
           display: flex;
           align-items: center;
-          gap: 18px;
         }
 
         .logo {
-          width: 65px;
-          height: 65px;
-          border-radius: 50%;
-          overflow: hidden;
-          box-shadow: var(--shadow-md);
-          position: relative;
+          height: 50px;
+          display: flex;
+          align-items: center;
         }
 
         .logo img {
-          width: 100%;
           height: 100%;
-          object-fit: cover;
+          width: auto;
+          object-fit: contain;
         }
 
         .logo-text h1 {
@@ -624,10 +620,7 @@
       <div class="logo-container">
         <div class="logo">
           <img src="assets/logo.png.jpg" alt="B&D Cleaning Logo">
-        </div>
-        <div class="logo-text">
-          <h1>B & D Cleaning</h1>
-          <p>Professional Cleaning Services</p>
+        </div
         </div>
       </div>
       <nav>
