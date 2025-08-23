@@ -71,34 +71,28 @@
           display: flex;
           align-items: center;
           justify-content: space-between;
-          padding: 0.25rem 2rem;
+          padding: 0.5rem 2rem;
           flex-wrap: wrap;
           gap: 1.5rem;
-          max-height: 90px; /* Constrain header height */
         }
 
         .logo-container {
           display: flex;
           align-items: center;
-          padding: 0.5rem 0;
+          justify-content: center;
         }
 
         .logo {
-          height: 80px; /* Increased height */
+          height: 70px;
           width: auto;
           display: block;
-          transition: transform 0.2s ease; /* Smooth hover effect */
-        }
-
-        .logo:hover {
-          transform: scale(1.05); /* Slight zoom on hover */
         }
 
         .logo img {
           height: 100%;
           width: auto;
           display: block;
-          object-fit: contain;
+          object-fit: cover;
         }
 
         .logo-text h1 {
@@ -652,10 +646,7 @@
       </script>
       <div class="logo-container">
         <div class="logo">
-          <img 
-            src="./assets/logo.jpg" 
-            alt="B&D Cleaning Logo">
-        </div
+          <img src="./assets/logo.jpg" alt="B&D Cleaning Logo">
         </div>
       </div>
       <nav>
