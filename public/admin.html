@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>B&D Cleaning - Admin Login</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header */
+        .admin-header {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo h1 {
+            color: #8B5CF6;
+            font-size: 24px;
+        }
+
+        /* Login Section */
+        .login-container {
+            max-width: 400px;
+            margin: 100px auto;
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .login-header h2 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+            font-weight: 500;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e1e5e9;
+            border-radius: 6px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #8B5CF6;
+        }
+
+        .btn {
+            background: #8B5CF6;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        .btn:hover {
+            background: #7C3AED;
+            transform: translateY(-1px);
+        }
+
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .btn-success {
+            background: #28a745;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+        }
+
+        /* Admin Section */
+        .admin-content {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #8B5CF6, #7C3AED);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .quotes-section {
+            margin-top: 30px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .section-header h3 {
+            color: #333;
+            font-size: 20px;
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #8B5CF6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Messages */
+        .admin-message {
+            padding: 12px 16px;
+            margin: 10px 0;
+            border-radius: 4px;
+            position: relative;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .alert-info {
+            background-color: #d1ecf1;
+            border-color: #bee5eb;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .admin-header {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .section-header {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 10px;
+            }
+        }
+
+        /* Hide sections initially */
+        #adminSection {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Login Section -->
+        <div id="loginSection">
+            <div class="login-container">
+                <div class="login-header">
+                    <h2>🧹 B&D Cleaning Admin</h2>
+                    <p>Please sign in to access the admin panel</p>
+                </div>
+                
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label for="email">Email Address</label>
+                        <input type="email" id="email" name="email" required 
+                               placeholder="Enter your email" autocomplete="username">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" name="password" required 
+                               placeholder="Enter your password" autocomplete="current-password">
+                    </div>
+                    
+                    <button type="submit" class="btn" id="loginBtn">
+                        <span id="loginBtnText">Sign In</span>
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Admin Section -->
+        <div id="adminSection">
+            <!-- Header -->
+            <div class="admin-header">
+                <div class="logo">
+                    <h1>🧹 B&D Cleaning Admin</h1>
+                </div>
+                <div>
+                    <button class="btn btn-secondary" id="refreshBtn">🔄 Refresh</button>
+                    <button class="btn btn-secondary" id="logoutBtn" style="margin-left: 10px;">Logout</button>
+                </div>
+            </div>
+
+            <!-- Loading Spinner -->
+            <div id="loadingSpinner" style="display: none; text-align: center; padding: 20px; background: white; border-radius: 10px; margin-bottom: 20px;">
+                <div class="spinner"></div>
+                <p>Loading...</p>
+            </div>
+
+            <!-- Main Content -->
+            <div class="admin-content">
+                <!-- Stats Dashboard -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number" id="totalQuotes">0</div>
+                        <div class="stat-label">Total Quotes</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="newQuotes">0</div>
+                        <div class="stat-label">New Quotes</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="contactedQuotes">0</div>
+                        <div class="stat-label">Contacted</div>
+                    </div>
+                </div>
+
+                <!-- Quotes Section -->
+                <div class="quotes-section">
+                    <div class="section-header">
+                        <h3>📋 Quote Requests</h3>
+                        <button class="btn" onclick="loadQuotes()">🔄 Refresh Quotes</button>
+                    </div>
+                    
+                    <div id="quotesContainer">
+                        <!-- Quotes will be loaded here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let currentToken = localStorage.getItem('adminToken');
+
+        // Utility Functions
+        function showLoading(show) {
+            const loader = document.getElementById('loadingSpinner');
+            if (loader) {
+                loader.style.display = show ? 'block' : 'none';
+            }
+            
+            // Also disable/enable buttons during loading
+            const buttons = document.querySelectorAll('button');
+            buttons.forEach(btn => {
+                if (btn.id !== 'logoutBtn') { // Don't disable logout button
+                    btn.disabled = show;
+                }
+            });
+        }
+
+        function showMessage(message, type = 'info') {
+            // Remove existing messages
+            const existingMessages = document.querySelectorAll('.admin-message');
+            existingMessages.forEach(msg => msg.remove());
+            
+            // Create new message
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `admin-message alert alert-${type}`;
+            messageDiv.innerHTML = `
+                <span>${message}</span>
+                <button onclick="this.parentElement.remove()" style="float: right; background: none; border: none; font-size: 20px; cursor: pointer; color: inherit;">&times;</button>
+            `;
+            
+            // Insert at top of main content
+            const mainContent = document.querySelector('.admin-content') || document.querySelector('.container');
+            mainContent.insertBefore(messageDiv, mainContent.firstChild);
+            
+            // Auto-remove after 5 seconds
+            setTimeout(() => {
+                if (messageDiv && messageDiv.parentElement) {
+                    messageDiv.remove();
+                }
+            }, 5000);
+        }
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Authentication Functions
+        function checkAuth() {
+            const token = localStorage.getItem('adminToken');
+            if (!token) {
+                showLoginForm();
+                return false;
+            }
+            currentToken = token;
+            return true;
+        }
+
+        function logout() {
+            localStorage.removeItem('adminToken');
+            currentToken = null;
+            showLoginForm();
+            showMessage('Logged out successfully', 'info');
+        }
+
+        function showLoginForm() {
+            const loginSection = document.getElementById('loginSection');
+            const adminSection = document.getElementById('adminSection');
+            
+            if (loginSection) loginSection.style.display = 'block';
+            if (adminSection) adminSection.style.display = 'none';
+        }
+
+        function showAdminPanel() {
+            const loginSection = document.getElementById('loginSection');
+            const adminSection = document.getElementById('adminSection');
+            
+            if (loginSection) loginSection.style.display = 'none';
+            if (adminSection) adminSection.style.display = 'block';
+            
+            loadQuotes();
+        }
+
+        // Login Function
+        async function login() {
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const loginBtnText = document.getElementById('loginBtnText');
+            
+            if (!email || !password) {
+                showMessage('Please enter both email and password', 'error');
+                return;
+            }
+            
+            try {
+                showLoading(true);
+                loginBtnText.innerHTML = '<div class="spinner"></div>Signing in...';
+                console.log('Attempting login for:', email);
+                
+                const response = await fetch('/api/admin/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+                
+                const data = await response.json();
+                console.log('Login response:', response.status, data);
+                
+                if (response.ok) {
+                    localStorage.setItem('adminToken', data.token);
+                    currentToken = data.token;
+                    showMessage('Login successful! Welcome back.', 'success');
+                    showAdminPanel();
+                } else {
+                    throw new Error(data.error || 'Login failed');
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                showMessage('Login failed: ' + error.message, 'error');
+            } finally {
+                showLoading(false);
+                loginBtnText.textContent = 'Sign In';
+            }
+        }
+
+        // Quote Management Functions
+        async function loadQuotes() {
+            if (!currentToken) {
+                logout();
+                return;
+            }
+            
+            try {
+                showLoading(true);
+                console.log('Loading quotes with token...');
+                
+                const response = await fetch('/api/admin/quotes', {
+                    headers: {
+                        'Authorization': `Bearer ${currentToken}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                console.log('Quotes response:', response.status);
+
+                if (!response.ok) {
+                    if (response.status === 401) {
+                        showMessage('Session expired. Please login again.', 'error');
+                        logout();
+                        return;
+                    }
+                    throw new Error(`Failed to load quotes: ${response.status} ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                console.log('Quotes loaded:', data);
+                
+                displayQuotes(data.quotes || []);
+                updateStats(data.quotes || []);
+                
+            } catch (error) {
+                console.error('Error loading quotes:', error);
+                showMessage('Failed to load quotes: ' + error.message, 'error');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        function displayQuotes(quotes) {
+            const container = document.getElementById('quotesContainer');
+            
+            if (!quotes || quotes.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: #666; background: #f8f9fa; border-radius: 8px;">
+                        <h3>📭 No quotes found</h3>
+                        <p>Quote requests will appear here when customers submit them.</p>
+                        <button onclick="loadQuotes()" class="btn" style="margin-top: 15px;">🔄 Refresh Now</button>
+                    </div>
+                `;
+                return;
+            }
+
+            // Sort quotes by creation date (newest first)
+            quotes.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+            
+            container.innerHTML = quotes.map(quote => createQuoteCard(quote)).join('');
+        }
+
+        function createQuoteCard(quote) {
+            const submittedDate = new Date(quote.created_at).toLocaleString();
+            const preferredDate = quote.preferred_date ? 
+                new Date(quote.preferred_date).toLocaleDateString() : 
+                'Not specified';
+            
+            return `
+                <div class="quote-card" data-quote-id="${quote.id}" style="background: white; border: 1px solid #ddd; border-radius: 8px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                    <div class="quote-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px;">
+                        <div class="quote-id" style="font-family: monospace; background: #f0f0f0; padding: 4px 8px; border-radius: 4px; font-size: 12px;">
+                            ID: ${quote.id.substring(0, 8)}...
+                        </div>
+                        <div class="quote-status status-${quote.status}" style="padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: bold; ${getStatusStyle(quote.status)}">
+                            ${quote.status.toUpperCase()}
+                        </div>
+                    </div>
+                    
+                    <div class="quote-details">
+                        <div class="detail-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin-bottom: 15px;">
+                            <div class="detail-item">
+                                <span class="detail-label" style="font-weight: bold; color: #666; display: block; margin-bottom: 4px;">Customer:</span>
+                                <span class="detail-value">${escapeHtml(quote.name)}</span>
+                            </div>
+                            
+                            <div class="detail-item">
+                                <span class="detail-label" style="font-weight: bold; color: #666; display: block; margin-bottom: 4px;">Email:</span>
+                                <span class="detail-value">
+                                    <a href="mailto:${escapeHtml(quote.email)}" style="color: #8B5CF6; text-decoration: none;">${escapeHtml(quote.email)}</a>
+                                </span>
+                            </div>
+                            
+                            <div class="detail-item">
+                                <span class="detail-label" style="font-weight: bold; color: #666; display: block; margin-bottom: 4px;">Phone:</span>
+                                <span class="detail-value">
+                                    <a href="tel:${escapeHtml(quote.phone || 'N/A')}" style="color: #8B5CF6; text-decoration: none;">${escapeHtml(quote.phone || 'N/A')}</a>
+                                </span>
+                            </div>
+                            
+                            <div class="detail-item">
+                                <span class="detail-label" style="font-weight: bold; color: #666; display: block; margin-bottom: 4px;">Service:</span>
+                                <span class="detail-value">${escapeHtml(quote.service_type)}</span>
+                            </div>
+                            
+                            <div class="detail-item">
+                                <span class="detail-label" style="font-weight: bold; color: #666; display: block; margin-bottom: 4px;">Preferred Date:</span>
+                                <span class="detail-value">${preferredDate}</span>
+                            </div>
+                            
+                            <div class="detail-item">
+                                <span class="detail-label" style="font-weight: bold; color: #666; display: block; margin-bottom: 4px;">Submitted:</span>
+                                <span class="detail-value">${submittedDate}</span>
+                            </div>
+                        </div>
+                        
+                        ${quote.message ? `
+                            <div class="quote-message" style="background: #f8f9fa; padding: 12px; border-radius: 6px; margin-top: 15px;">
+                                <span class="detail-label" style="font-weight: bold; color: #666; display: block; margin-bottom: 8px;">Customer Message:</span>
+                                <p class="detail-value" style="margin: 0; line-height: 1.4;">${escapeHtml(quote.message)}</p>
+                            </div>
+                        ` : ''}
+                    </div>
+                    
+                    <div class="quote-actions" style="display: flex; gap: 10px; margin-top: 20px; padding-top: 15px; border-top: 1px solid #eee; flex-wrap: wrap;">
+                        <button class="btn" onclick="contactCustomer('${escapeHtml(quote.email)}', '${escapeHtml(quote.phone)}', '${escapeHtml(quote.name)}')" style="background: #8B5CF6; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-size: 14px;">
+                            📧 Contact Customer
+                        </button>
+                        <button class="btn btn-secondary" onclick="copyQuoteDetails('${quote.id}')" style="background: #6c757d; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-size: 14px;">
+                            📋 Copy Details
+                        </button>
+                        ${quote.status === 'new' ? `
+                            <button class="btn btn-success" onclick="updateQuoteStatus('${quote.id}', 'contacted')" style="background: #28a745; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-size: 14px;">
+                                ✅ Mark Contacted
+                            </button>
+                        ` : ''}
+                    </div>
+                </div>
+            `;
+        }
+
+        function getStatusStyle(status) {
+            switch(status) {
+                case 'new': return 'background: #ffeaa7; color: #d63031;';
+                case 'contacted': return 'background: #55efc4; color: #00b894;';
+                case 'quoted': return 'background: #a8e6cf; color: #00b894;';
+                case 'completed': return 'background: #81ecec; color: #00cec9;';
+                default: return 'background: #ddd; color: #666;';
+            }
+        }
+
+        function updateStats(quotes) {
+            const totalQuotes = quotes.length;
+            const newQuotes = quotes.filter(q => q.status === 'new').length;
+            const contactedQuotes = quotes.filter(q => q.status === 'contacted').length;
+            
+            // Update stats if elements exist
+            const totalEl = document.getElementById('totalQuotes');
+            const newEl = document.getElementById('newQuotes');
+            const contactedEl = document.getElementById('contactedQuotes');
+            
+            if (totalEl) totalEl.textContent = totalQuotes;
+            if (newEl) newEl.textContent = newQuotes;
+            if (contactedEl) contactedEl.textContent = contactedQuotes;
+        }
+
+        // Action Functions
+        function contactCustomer(email, phone, name) {
+            const subject = encodeURIComponent(`Re: Your Cleaning Service Quote Request`);
+            const body = encodeURIComponent(`Hi ${name},\n\nThank you for your quote request with B&D Cleaning Co. We'd be happy to provide you with a customized quote for your cleaning needs.\n\nCould we schedule a brief call to discuss your requirements in more detail?\n\nBest regards,\nB&D Cleaning Co\nPhone: ${process.env.COMPANY_PHONE || '0448 637 041'}`);
+            
+            const mailtoLink = `mailto:${email}?subject=${subject}&body=${body}`;
+            window.open(mailtoLink);
+            
+            showMessage(`Opening email to ${name} (${email})`, 'info');
+        }
+
+        function copyQuoteDetails(quoteId) {
+            const quoteCard = document.querySelector(`[data-quote-id="${quoteId}"]`);
+            if (!quoteCard) return;
+            
+            const details = quoteCard.textContent;
+            navigator.clipboard.writeText(details).then(() => {
+                showMessage('Quote details copied to clipboard!', 'success');
+            }).catch(() => {
+                showMessage('Failed to copy to clipboard', 'error');
+            });
+        }
+
+        async function updateQuoteStatus(quoteId, newStatus) {
+            try {
+                showLoading(true);
+                
+                const response = await fetch(`/api/admin/quotes/${quoteId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${currentToken}`
+                    },
+                    body: JSON.stringify({ status: newStatus })
+                });
+                
+                if (response.ok) {
+                    showMessage(`Quote status updated to ${newStatus}`, 'success');
+                    loadQuotes(); // Reload quotes to show updated status
+                } else {
+                    throw new Error('Failed to update quote status');
+                }
+            } catch (error) {
+                console.error('Error updating quote status:', error);
+                showMessage('Failed to update quote status: ' + error.message, 'error');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        // Event Listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Admin panel loaded');
+            
+            // Check authentication on page load
+            if (checkAuth()) {
+                showAdminPanel();
+            }
+            
+            // Add login form event listener
+            const loginForm = document.getElementById('loginForm');
+            if (loginForm) {
+                loginForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    login();
+                });
+            }
+            
+            // Add Enter key support for login
+            const passwordField = document.getElementById('password');
+            if (passwordField) {
+                passwordField.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        login();
+                    }
+                });
+            }
+            
+            // Add logout button event listener
+            const logoutBtn = document.getElementById('logoutBtn');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', logout);
+            }
+            
+            // Add refresh button event listener
+            const refreshBtn = document.getElementById('refreshBtn');
+            if (refreshBtn) {
+                refreshBtn.addEventListener('click', loadQuotes);
+            }
+        });
+
+        // Auto-refresh quotes every 30 seconds
+        setInterval(() => {
+            if (currentToken && document.getElementById('adminSection').style.display !== 'none') {
+                loadQuotes();
+            }
+        }, 30000);
+    </script>
+</body>
+</html>
