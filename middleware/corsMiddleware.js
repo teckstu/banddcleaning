@@ -8,9 +8,11 @@ const createCorsMiddleware = () => {
   
   return cors({
     origin: (origin, callback) => {
+      console.log(`🔍 CORS Request from origin: ${origin || 'null'}`);
+      
       // Allow requests with no origin (mobile apps, curl, Postman)
-      if (!origin && !isProduction) {
-        console.log('🔍 CORS: Allowing null origin in development');
+      if (!origin) {
+        console.log('🔍 CORS: Allowing null origin request');
         return callback(null, true);
       }
       
@@ -21,31 +23,25 @@ const createCorsMiddleware = () => {
       }
       
       // Security logging for blocked requests
-      console.warn(`❌ CORS: Blocked origin: ${origin || 'null'}`);
-      console.warn(`🔍 CORS: User-Agent: ${this?.req?.get('User-Agent') || 'unknown'}`);
-      console.warn(`🔍 CORS: IP: ${this?.req?.ip || 'unknown'}`);
+      console.warn(`❌ CORS: Blocked origin: ${origin}`);
+      console.warn(`🔍 CORS: Request origin "${origin}" is not in the allowed list:`);
+      console.warn('🔍 CORS Allowed origins:', JSON.stringify(config.origins));
       
-      // In production, be strict about CORS violations
+      // In production, strict security
       if (isProduction) {
-        return callback(new Error(`CORS: Origin ${origin} not allowed`), false);
+        return callback(new Error(`CORS policy: Origin ${origin} not allowed`), false);
       }
       
-      // In development, log but allow (for testing)
-      console.warn('⚠️ CORS: Allowing in development mode');
+      // In development, allow for easier testing
+      console.warn('⚠️ CORS: Allowing in development mode only');
       return callback(null, true);
     },
-    
     credentials: config.credentials,
     methods: config.methods,
     allowedHeaders: config.allowedHeaders,
     exposedHeaders: config.exposedHeaders,
     maxAge: config.maxAge,
-    optionsSuccessStatus: config.optionsSuccessStatus,
-    
-    // Enhanced security options
     preflightContinue: false,
-    
-    // Custom preflight handler for additional security
     optionsSuccessStatus: 200
   });
 };

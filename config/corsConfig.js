@@ -15,7 +15,23 @@ const corsConfig = {
       // CDN domains (if using)
       'https://cdn.banddcleaning.com.au',
       
-      // Add any other legitimate domains
+      // Render.com domains - all possible variations
+      'https://banddcleaning-com-au.onrender.com',
+      'https://www.banddcleaning-com-au.onrender.com',
+      'https://banddcleaning.onrender.com',
+      'https://bd-cleaning.onrender.com',
+      'https://bd-cleaning-com-au.onrender.com',
+      'https://b-d-cleaning.onrender.com',
+      'https://bandd-cleaning.onrender.com',
+      'https://bandd-cleaning-com-au.onrender.com',
+      'https://banddcleaning-admin.onrender.com',
+      'https://bd-cleaning-admin.onrender.com',
+      'https://banddadmin.onrender.com',
+      
+      // If your domain is just banddcleaning without .com.au
+      'https://banddcleaning.com',
+      'https://www.banddcleaning.com',
+      'https://admin.banddcleaning.com',
     ],
     
     credentials: true,

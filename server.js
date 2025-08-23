@@ -2,7 +2,21 @@ require('dotenv').config();
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
-const bcrypt = require('bcryptjs');
+const bcrypt = requi
+app.use((req, res, next) => {
+  const origin = req.get('Origin');
+  
+  if (origin) {
+    console.log('📝 Cross-Origin Request:');
+    console.log('  Origin:', origin);
+    console.log('  Path:', req.path);
+    console.log('  Method:', req.method);
+    console.log('  Timestamp:', new Date().toISOString());
+  }
+  
+  next();
+});
+
 const jwt = require('jsonwebtoken');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
@@ -15,7 +29,6 @@ const xss = require('xss-clean');
 const compression = require('compression');
 const cookieParser = require('cookie-parser');
 
-// Database imports
 const { initializeDatabase, Quote, Admin } = require('./models/database');
 const QuoteService = require('./services/quoteService');
 const { createCorsMiddleware, corsSecurityMiddleware } = require('./middleware/corsMiddleware');
@@ -27,7 +40,6 @@ const app = express();
 // =====================
 let dbInitialized = false;
 
-// Initialize database on startup
 initializeDatabase()
   .then(() => {
     dbInitialized = true;
@@ -56,7 +68,6 @@ const optionalEnvVars = {
   'DB_LOGGING': 'false'
 };
 
-// Set defaults for optional variables
 Object.entries(optionalEnvVars).forEach(([key, defaultValue]) => {
   if (!process.env[key]) {
     process.env[key] = defaultValue;
@@ -71,11 +82,10 @@ if (missingVars.length > 0) {
 }
 
 // =====================
-// SECURITY MIDDLEWARE - MORE PERMISSIVE CSP FOR DEVELOPMENT
+// SECURITY MIDDLEWARE
 // ================
 app.use(helmet({
   contentSecurityPolicy: process.env.NODE_ENV === 'production' ? {
-    // Strict CSP for production
     directives: {
       defaultSrc: ["'self'"],
       styleSrc: ["'self'", "'unsafe-inline'"],
@@ -89,7 +99,6 @@ app.use(helmet({
       frameSrc: ["'none'"],
     },
   } : {
-    // Permissive CSP for development
     directives: {
       defaultSrc: ["'self'"],
       styleSrc: ["'self'", "'unsafe-inline'"],
@@ -116,81 +125,49 @@ app.use(xss());
 app.use(hpp());
 
 // ================
-// CORS CONFIGURATION - COMPLETE SECURITY
+// CORS CONFIGURATION
 // ================
-const allowedOrigins = process.env.NODE_ENV === 'production' ? [
-  'https://banddcleaning.com.au',
-  'https://www.banddcleaning.com.au',
-  'https://admin.banddcleaning.com.au',
-  'https://www.bandcleaning-com-au.onrender.com'
-] : [
-  'http://localhost:3000',
-  'http://localhost:3001',
-  'http://localhost:5500',
-  'http://127.0.0.1:3000',
-  'http://127.0.0.1:5500'
-  // Remove production domains from development
-];
+const corsMiddleware = createCorsMiddleware();
+app.use(corsMiddleware);
+app.use(corsSecurityMiddleware);
 
-console.log('🔒 CORS Allowed Origins:', allowedOrigins);
+const isProduction = process.env.NODE_ENV === 'production';
+const corsConfig = require('./config/corsConfig');
+const currentConfig = isProduction ? corsConfig.production : corsConfig.development;
 
-// CORS middleware with STRICT security
-app.use(cors({
-  origin: (origin, callback) => {
-    console.log('🔍 CORS Check - Origin:', origin || 'null');
+console.log('🔒 CORS Configuration loaded:');
+console.log('🔒 Environment:', isProduction ? 'production' : 'development');
+console.log('🔒 Allowed Origins:', JSON.stringify(currentConfig.origins));
+console.log('🔒 Credentials allowed:', currentConfig.credentials);
+console.log('🔒 Methods allowed:', currentConfig.methods);
 
-    // Allow requests with no origin ONLY in development
-    if (!origin) {
-      if (process.env.NODE_ENV === 'development') {
-        console.log('✅ CORS: Allowing null origin in development');
-        return callback(null, true);
-      } else {
-        console.log('❌ CORS: Blocking null origin in production');
-        return callback(new Error('Origin required in production'), false);
-      }
-    }
 
-    // Check if origin is in allowed list
-    if (allowedOrigins.includes(origin)) {
-      console.log('✅ CORS: Origin allowed -', origin);
-      return callback(null, true);
-    }
-
-    // BLOCK unauthorized origins - THIS WAS MISSING!
-    console.warn('🚨 CORS: BLOCKED malicious origin -', origin);
-    return callback(new Error(`CORS policy: Origin ${origin} not allowed`), false);
-  },
-  
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
-  maxAge: 300
-}));
-
-// Additional CORS security middleware
 app.use((req, res, next) => {
   const origin = req.get('Origin');
   
-  // Log all cross-origin requests for monitoring
-  if (origin && !allowedOrigins.includes(origin)) {
-    console.warn('🚨 SECURITY ALERT: Blocked cross-origin request');
-    console.warn('  Origin:', origin);
-    console.warn('  IP:', req.ip);
-    console.warn('  Path:', req.path);
-    console.warn('  Method:', req.method);
-    console.warn('  User-Agent:', req.get('User-Agent'));
-    console.warn('  Timestamp:', new Date().toISOString());
+  
+  if (origin) {
+    console.log('� Cross-Origin Request:');
+    console.log('  Origin:', origin);
+    console.log('  Path:', req.path);
+    console.log('  Method:', req.method);
+    console.log('  Timestamp:', new Date().toISOString());
+    
+    
+    if (!allowedOrigins.includes(origin)) {
+      console.warn('⚠️ Note: This origin would normally be blocked');
+    }
   }
   
   next();
 });
 
 // ================
-// RATE LIMITING - COMPLETELY FIXED
+// RATE LIMITING
 // ================
 const createRateLimiter = (options = {}) => {
   return rateLimit({
-    windowMs: options.windowMs || 15 * 60 * 1000, // 15 minutes
+    windowMs: options.windowMs || 15 * 60 * 1000,
     max: options.max || (process.env.NODE_ENV === 'production' ? 100 : 500),
     standardHeaders: 'draft-7',
     legacyHeaders: false,
@@ -206,7 +183,6 @@ const createRateLimiter = (options = {}) => {
         retryAfter: Math.ceil((options.windowMs || 15 * 60 * 1000) / 1000)
       });
     }
-    // NO onLimitReached - this was causing the deprecation warning
   });
 };
 
@@ -226,7 +202,7 @@ app.use('/api/auth/', authLimiter);
 app.use('/api/quotes/', quoteLimiter);
 
 // =================
-// EMAIL CONFIG - FIXED TIMING
+// EMAIL CONFIG
 // =================
 let emailTransporter = null;
 let emailStatus = 'initializing';
@@ -244,7 +220,6 @@ const initializeEmail = () => {
       }
     });
 
-    // Verify email connection
     transporter.verify((error, success) => {
       if (error) {
         console.warn('⚠️ Email server connection failed:', error.message);
@@ -263,7 +238,6 @@ const initializeEmail = () => {
   }
 };
 
-// Initialize email
 initializeEmail();
 
 // ================
@@ -325,12 +299,21 @@ const authenticate = (req, res, next) => {
 // Admin Authentication Middleware
 const authenticateAdmin = async (req, res, next) => {
   try {
-    const authHeader = req.headers.authorization;
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    // Check for token in cookie first (preferred method)
+    let token = req.cookies.jwt;
+    
+    // Fallback to Authorization header if no cookie
+    if (!token) {
+      const authHeader = req.headers.authorization;
+      if (authHeader && authHeader.startsWith('Bearer ')) {
+        token = authHeader.substring(7);
+      }
+    }
+    
+    if (!token) {
       return res.status(401).json({ error: 'No token provided' });
     }
 
-    const token = authHeader.substring(7);
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     
     // Find admin by ID
@@ -346,6 +329,31 @@ const authenticateAdmin = async (req, res, next) => {
     res.status(401).json({ error: 'Invalid token' });
   }
 };
+
+// ================
+// CORS Debug Route
+// ================
+app.get('/api/debug/cors', (req, res) => {
+  const isProduction = process.env.NODE_ENV === 'production';
+  const config = isProduction ? corsConfig.production : corsConfig.development;
+  
+  res.json({
+    environment: process.env.NODE_ENV || 'development',
+    requestOrigin: req.get('Origin') || 'No origin header',
+    isAllowed: !req.get('Origin') || config.origins.includes(req.get('Origin')),
+    corsConfig: {
+      origins: config.origins,
+      credentials: config.credentials,
+      methods: config.methods,
+      allowedHeaders: config.allowedHeaders,
+      exposedHeaders: config.exposedHeaders,
+      maxAge: config.maxAge
+    },
+    headers: {
+      requestHeaders: req.headers
+    }
+  });
+});
 
 // ================
 // STATIC FILES
@@ -460,10 +468,10 @@ app.post('/api/auth/login', async (req, res) => {
       locked_until: null
     });
     
-    res.cookie('token', token, {
+    res.cookie('jwt', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
       maxAge: 3600000
     });
     
@@ -487,7 +495,11 @@ app.post('/api/auth/login', async (req, res) => {
 
 // Logout endpoint
 app.post('/api/auth/logout', (req, res) => {
-  res.clearCookie('token');
+  res.clearCookie('jwt', {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax'
+  });
   res.json({ success: true, message: 'Logged out successfully' });
 });
 
@@ -706,9 +718,16 @@ app.post('/api/admin/login', async (req, res) => {
 
     console.log('✅ Admin login successful:', email);
 
+    // Set JWT in HTTP-only cookie
+    res.cookie('jwt', token, {
+      httpOnly: true, 
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+      maxAge: 3600000 // 1 hour
+    });
+
     res.json({
       success: true,
-      token,
       admin: {
         id: admin.id,
         email: admin.email,
@@ -863,6 +882,35 @@ app.get('/api/admin/test', authenticateAdmin, (req, res) => {
   });
 });
 
+// Auth status endpoint
+app.get('/api/auth/status', (req, res) => {
+  try {
+    const token = req.cookies.jwt;
+    
+    if (!token) {
+      return res.status(401).json({ authenticated: false });
+    }
+    
+    jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+      if (err) {
+        return res.status(401).json({ authenticated: false });
+      }
+      
+      res.json({ 
+        authenticated: true,
+        user: {
+          id: decoded.adminId,
+          email: decoded.email,
+          role: decoded.role
+        }
+      });
+    });
+  } catch (error) {
+    console.error('Auth status error:', error);
+    res.status(500).json({ error: 'Failed to check authentication status' });
+  }
+});
+
 // ================
 // STATIC ROUTES
 // ================
@@ -899,7 +947,7 @@ app.use((err, req, res, next) => {
 });
 
 // ================
-// SERVER STARTUP - FIXED EMAIL STATUS
+// SERVER STARTUP
 // ================
 const PORT = process.env.PORT || 3000;
 const rateLimitMax = process.env.NODE_ENV === 'production' ? 100 : 500;
@@ -908,12 +956,11 @@ const server = app.listen(PORT, () => {
   console.log(`🚀 Server running in ${process.env.NODE_ENV || 'development'} mode on port ${PORT}`);
   
   console.log('🔒 Security Features Active:');
-  console.log(`- CORS: ${allowedOrigins.join(', ')}`);
+  console.log(`- CORS: ${corsConfig.production.origins.join(', ')}`);
   console.log(`- Rate Limiting: ${rateLimitMax} req/15min`);
   console.log(`- JWT: HS256 with 1h expiration`);
   console.log(`- HTTPS Headers: ${process.env.NODE_ENV === 'production' ? 'Production' : 'Development'}`);
   
-  // Don't show email status immediately - it's still initializing
   console.log('📧 Email: Initializing...');
 });
 
