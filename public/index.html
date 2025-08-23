@@ -98,7 +98,28 @@
           z-index: 2;
         }
 
-        /* Modern Marketing Styles */
+        .header-award {
+          display: flex;
+          align-items: center;
+          gap: 1rem;
+          padding: 0.5rem 1rem;
+          background: rgba(255, 255, 255, 0.1);
+          border-radius: var(--radius-sm);
+          backdrop-filter: blur(5px);
+        }
+
+        .header-award .award-thumbnail {
+          height: 40px;
+          width: auto;
+          object-fit: contain;
+        }
+
+        .header-award .award-text {
+          color: white;
+          font-size: 0.9rem;
+          font-weight: 500;
+          text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+        }        /* Modern Marketing Styles */
         .hero {
           min-height: 80vh;
           display: flex;
@@ -747,10 +768,7 @@
           <a href="#services" class="cta-button secondary">Explore Services</a>
         </div>
         <div class="trust-indicators">
-          <div class="trust-item award-item">
-            <img src="./assets/businessaward.png" alt="Local Business Awards Badge" class="award-thumbnail">
-            <span>Proud Finalist in the 2025 Local Business Awards - Excellence in Professional Services</span>
-          </div>
+
           <div class="trust-item">
             <i class="fas fa-star"></i>
             <span>4.9/5 Rating</span>
@@ -786,6 +804,10 @@
         <div class="service-card">
           <h3>🧽 Specialized Services</h3>
           <p>Carpet cleaning, window cleaning, pressure washing, and sanitization services</p>
+        </div>
+        <div class="service-card">
+          <h3>🌿 Garden & Lawn Maintenance</h3>
+          <p>Lawn mowing, garden care, landscaping, hedge trimming, and yard cleanup services</p>
         </div>
       </div>
     </div>
