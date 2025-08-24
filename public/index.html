@@ -1889,8 +1889,15 @@ function validateEmail(email) {
 }
 
 function validatePhone(phone) {
-    const re = /^[\+]?[1-9][\d]{0,15}$/;
-    return re.test(phone.replace(/\s+/g, ''));
+    // Remove all non-digit characters
+    const cleanPhone = phone.replace(/[^\d+]/g, '');
+    
+    // Australian mobile: 04XXXXXXXX or +614XXXXXXXX
+    // Australian landline: XXXXXXXXXX (with area code)
+    const mobileRegex = /^(?:\+?61|0)[4][0-9]{8}$/;
+    const landlineRegex = /^(?:\+?61|0)[2378][0-9]{8}$/;
+    
+    return mobileRegex.test(cleanPhone) || landlineRegex.test(cleanPhone);
 }
 
 function showError(message) {
