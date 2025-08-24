@@ -1950,65 +1950,7 @@
     return mobileRegex.test(cleanPhone) || landlineRegex.test(cleanPhone);
   }
 
-    // Client-side validation
-    if (!quoteData.name || quoteData.name.length < 2) {
-        return showError('Please enter a valid name (at least 2 characters)');
-    }
 
-    if (!quoteData.email || !validateEmail(quoteData.email)) {
-        return showError('Please enter a valid email address');
-    }
-
-    if (!quoteData.phone || !validatePhone(quoteData.phone)) {
-        return showError('Please enter a valid phone number');
-    }
-
-    if (!quoteData.serviceType) {
-        return showError('Please select a service type');
-    }
-
-    if (!quoteData.message || quoteData.message.length < 10) {
-        return showError('Please provide more details about your cleaning needs (at least 10 characters)');
-    }
-
-    // Show loading state
-    submitBtn.disabled = true;
-    submitText.innerHTML = '<div class="spinner"></div>Sending Request...';
-
-    // API endpoint
-    const API_BASE_URL = window.location.hostname === 'localhost' 
-        ? 'http://localhost:3000'
-        : 'https://www.bandcleaning-com-au.onrender.com';
-
-    try {
-        console.log('Submitting quote to:', `${API_BASE_URL}/api/quotes`);
-        console.log('Quote data:', quoteData);
-
-        const response = await fetch(`${API_BASE_URL}/api/quotes`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(quoteData)
-        });
-
-        const result = await response.json();
-        console.log('Server response:', result);
-
-        if (response.ok) {
-            showSuccess(`Quote request submitted successfully! Quote ID: ${result.quoteId}. We'll get back to you within 24 hours.`);
-            this.reset();
-        } else {
-            throw new Error(result.error || `Server error: ${response.status}`);
-        }
-    } catch (error) {
-        console.error('Submission error:', error);
-        showError(`Failed to submit quote: ${error.message}. Please try again or contact us directly.`);
-    } finally {
-        submitBtn.disabled = false;
-        submitText.textContent = 'Get My Free Quote';
-    }
-;
 
 // Add real-time validation
 document.getElementById('email').addEventListener('blur', function() {
