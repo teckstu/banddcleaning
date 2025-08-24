@@ -76,11 +76,40 @@ app.use(corsSecurityMiddleware);
 // Form submission endpoint
 app.post('/api/submit', async (req, res) => {
   try {
-    const { name, email, phone, serviceType, preferredDate, frequency, address, message } = req.body;
+    // Check if database is initialized
+    if (!dbInitialized) {
+      console.error('Database not initialized');
+      return res.status(503).json({ error: 'Service temporarily unavailable. Please try again in a few moments.' });
+    }
+
+    const { 
+      name, 
+      email, 
+      phone, 
+      service_type, 
+      preferred_date, 
+      cleaning_frequency, 
+      address, 
+      message 
+    } = req.body;
+
+    console.log('Received form data:', req.body); // Debug log
     
-    // Basic validation
-    if (!name || !email || !serviceType || !message) {
-      return res.status(400).json({ error: 'Missing required fields' });
+    // Comprehensive validation
+    if (!name || name.length < 2) {
+      return res.status(400).json({ error: 'Name is required and must be at least 2 characters long' });
+    }
+
+    if (!email || !email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
+      return res.status(400).json({ error: 'Valid email address is required' });
+    }
+
+    if (!service_type) {
+      return res.status(400).json({ error: 'Service type is required' });
+    }
+
+    if (!message || message.length < 10) {
+      return res.status(400).json({ error: 'Message is required and must be at least 10 characters long' });
     }
 
     // Create quote record
@@ -88,30 +117,58 @@ app.post('/api/submit', async (req, res) => {
       name,
       email,
       phone,
-      serviceType,
-      preferredDate,
-      frequency,
+      service_type,
+      preferred_date,
+      cleaning_frequency,
       address,
       message,
       status: 'pending',
-      createdAt: new Date()
+      created_at: new Date()
     });
 
-    // Save to database
-    await quote.save();
+    try {
+      // Save to database with validation
+      const savedQuote = await quote.save();
+      console.log('Quote saved successfully:', savedQuote.id);
 
-    // Send email notification
-    const emailService = new QuoteService();
-    await emailService.sendQuoteNotification(quote);
+      try {
+        // Send email notification
+        const emailService = new QuoteService();
+        await emailService.sendQuoteNotification(savedQuote);
+        console.log('Quote notification email sent');
+      } catch (emailError) {
+        console.error('Email notification failed:', emailError);
+        // Continue with success response even if email fails
+      }
 
-    res.status(200).json({ 
-      message: 'Quote request received successfully! We will contact you within 24 hours.',
-      quoteId: quote._id 
-    });
+      res.status(200).json({ 
+        message: 'Quote request received successfully! We will contact you within 24 hours.',
+        quoteId: savedQuote.id 
+      });
+    } catch (dbError) {
+      console.error('Database error:', dbError);
+      
+      if (dbError.name === 'SequelizeValidationError') {
+        return res.status(400).json({ 
+          error: 'Invalid data provided',
+          details: dbError.errors.map(err => err.message)
+        });
+      }
+      
+      if (dbError.name === 'SequelizeDatabaseError') {
+        return res.status(500).json({ 
+          error: 'Database error occurred. Please try again later.'
+        });
+      }
+
+      res.status(500).json({ 
+        error: 'An unexpected error occurred while processing your request. Please try again later.'
+      });
+    }
   } catch (error) {
     console.error('Quote submission error:', error);
     res.status(500).json({ 
-      error: 'An error occurred while processing your request. Please try again later.' 
+      error: 'An error occurred while processing your request. Please try again later.'
     });
   }
 });

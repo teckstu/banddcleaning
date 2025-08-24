@@ -47,15 +47,30 @@ const Quote = sequelize.define('Quote', {
   service_type: {
     type: DataTypes.ENUM,
     values: [
-      'End of Lease Cleaning',
-      'Regular Cleaning',
-      'Deep Cleaning',
-      'Office Cleaning',
-      'Carpet Cleaning',
-      'Window Cleaning',
-      'Other'
+      'residential_cleaning',
+      'commercial_cleaning',
+      'end_of_lease',
+      'deep_cleaning',
+      'carpet_cleaning',
+      'window_cleaning',
+      'pressure_washing',
+      'sanitization',
+      'lawn_garden',
+      'pest_control'
     ],
     allowNull: false
+  },
+  cleaning_frequency: {
+    type: DataTypes.ENUM,
+    values: [
+      'weekly',
+      'fortnightly',
+      'monthly',
+      'quarterly',
+      'once',
+      'emergency'
+    ],
+    allowNull: true
   },
   message: {
     type: DataTypes.TEXT,

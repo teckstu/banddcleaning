@@ -1914,12 +1914,12 @@
   });
 
   // Form validation helpers
-function validateEmail(email) {
+  function validateEmail(email) {
     const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return re.test(email);
-}
+  }
 
-function validatePhone(phone) {
+  function validatePhone(phone) {
     // Remove all non-digit characters
     const cleanPhone = phone.replace(/[^\d+]/g, '');
     
@@ -1929,7 +1929,7 @@ function validatePhone(phone) {
     const landlineRegex = /^(?:\+?61|0)[2378][0-9]{8}$/;
     
     return mobileRegex.test(cleanPhone) || landlineRegex.test(cleanPhone);
-}
+  }
 
     // Client-side validation
     if (!quoteData.name || quoteData.name.length < 2) {
@@ -1989,7 +1989,7 @@ function validatePhone(phone) {
         submitBtn.disabled = false;
         submitText.textContent = 'Get My Free Quote';
     }
-});
+;
 
 // Add real-time validation
 document.getElementById('email').addEventListener('blur', function() {
