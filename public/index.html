@@ -251,7 +251,7 @@
         .header-content {
           display: flex;
           align-items: center;
-          justify-content: flex-end;
+          justify-content: space-between;
           height: 100%;
           padding: 0 var(--space-md);
           position: relative;
@@ -940,15 +940,16 @@
         }
 
         .service-card {
-          background: white;
-          color: var(--text-dark);
-          padding: 2.5rem;
-          border-radius: var(--radius-md);
-          text-align: center;
-          transition: var(--transition);
-          border: 1px solid var(--cream-dark);
           position: relative;
+          min-height: 400px;
+          border-radius: var(--radius-lg);
           overflow: hidden;
+          color: white;
+          text-align: left;
+          display: flex;
+          flex-direction: column;
+          justify-content: flex-end;
+          transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
 
         .service-card::before {
@@ -956,40 +957,96 @@
           position: absolute;
           top: 0;
           left: 0;
-          width: 100%;
-          height: 4px;
-          background: var(--purple-primary);
-          transform: scaleX(0);
-          transform-origin: left;
-          transition: transform 0.3s ease;
+          right: 0;
+          bottom: 0;
+          background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.5) 40%, rgba(0,0,0,0.1) 100%);
+          z-index: 1;
+          transition: opacity 0.3s ease;
+        }
+
+        .service-card.residential {
+          background: url('./assets/residential-cleaning.jpg') center/cover no-repeat;
+        }
+
+        .service-card.commercial {
+          background: url('./assets/commercial-cleaning.jpg') center/cover no-repeat;
+        }
+
+        .service-card.hazardous {
+          background: url('./assets/hazardous-cleaning.jpg') center/cover no-repeat;
+        }
+
+        .service-card.garden {
+          background: url('./assets/garden-maintenance.jpg') center/cover no-repeat;
         }
 
         .service-card:hover {
           transform: translateY(-5px);
-          box-shadow: var(--shadow-md);
+          box-shadow: var(--shadow-lg);
         }
 
         .service-card:hover::before {
-          transform: scaleX(1);
+          opacity: 0.95;
         }
 
-        .service-card i {
-          font-size: 2.5rem;
-          color: var(--purple-primary);
-          margin-bottom: 1.5rem;
+        .service-content {
+          position: relative;
+          z-index: 2;
+          padding: 2rem;
         }
 
         .service-card h3 {
-          font-size: 1.5rem;
-          margin-bottom: 1rem;
-          color: var(--text-dark);
+          font-size: 1.75rem;
           font-weight: 600;
+          margin-bottom: 1rem;
+          color: white;
+          text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
         }
 
         .service-card p {
-          color: var(--text-light);
+          color: rgba(255,255,255,0.9);
           font-size: 1.1rem;
           line-height: 1.6;
+          margin-bottom: 1.5rem;
+        }
+
+        .service-card .learn-more {
+          color: white;
+          text-decoration: none;
+          font-weight: 500;
+          display: inline-flex;
+          align-items: center;
+          gap: 0.5rem;
+          opacity: 0.9;
+          transition: opacity 0.3s ease;
+        }
+
+        .service-card .learn-more:hover {
+          opacity: 1;
+        }
+
+        .service-card .learn-more i {
+          font-size: 1.2rem;
+        }
+
+        @media (max-width: 768px) {
+          .service-card {
+            min-height: 350px;
+          }
+        }
+
+        @media (max-width: 480px) {
+          .service-card {
+            min-height: 300px;
+          }
+          
+          .service-card h3 {
+            font-size: 1.5rem;
+          }
+          
+          .service-card p {
+            font-size: 1rem;
+          }
         }
 
         /* Reviews Section */
@@ -1313,23 +1370,91 @@
         }
 
         /* Responsive Design */
+        .award-info {
+          display: flex;
+          align-items: center;
+          gap: var(--space-sm);
+        }
+
+        .award-thumbnail {
+          height: calc(var(--header-height) * 0.6);
+          width: auto;
+        }
+
+        .award-text {
+          color: white;
+          font-size: var(--text-sm);
+          font-weight: 500;
+        }
+
+        nav {
+          display: flex;
+          align-items: center;
+        }
+
+        nav ul {
+          display: flex;
+          align-items: center;
+          gap: var(--space-md);
+          list-style: none;
+          margin: 0;
+          padding: 0;
+        }
+
+        nav a {
+          color: white;
+          text-decoration: none;
+          font-weight: 500;
+          display: flex;
+          align-items: center;
+          gap: var(--space-xs);
+          transition: var(--transition);
+        }
+
+        nav a:hover {
+          color: var(--purple-light);
+        }
+
+        nav a i {
+          font-size: 1.1em;
+        }
+
         @media (max-width: 768px) {
           .header-content {
-            flex-direction: column;
-            text-align: center;
+            justify-content: space-between;
+            padding: 0 var(--space-sm);
           }
 
-          .hero h2 {
-            font-size: 2rem;
+          .award-text {
+            display: none;
           }
 
-          .form-row {
-            grid-template-columns: 1fr;
+          nav ul {
+            gap: var(--space-sm);
           }
 
-          .services-grid {
-            grid-template-columns: 1fr;
+          nav a span {
+            display: none;
           }
+
+          nav a i {
+            font-size: 1.2em;
+          }
+        }
+
+        @media (max-width: 480px) {
+          .header-content {
+            padding: 0 var(--space-xs);
+          }
+
+          .award-thumbnail {
+            height: calc(var(--header-height) * 0.5);
+          }
+
+          nav ul {
+            gap: var(--space-xs);
+          }
+        }
         }
       </style>
 </head>
@@ -1344,10 +1469,24 @@
       </div>
       <nav>
         <ul>
-          <li><a href="#contact">Contact</a></li>
-          <li><a href="https://www.facebook.com/profile.php?id=100092143831205" target="_blank" rel="noopener noreferrer" class="facebook-link">
-            <i class="fab fa-facebook-f"></i>
-            <span>Facebook</span>
+          <li>
+            <a href="#contact">
+              <i class="fas fa-envelope"></i>
+              <span>Contact</span>
+            </a>
+          </li>
+          <li>
+            <a href="https://www.facebook.com/profile.php?id=100092143831205" target="_blank" rel="noopener noreferrer">
+              <i class="fab fa-facebook-f"></i>
+              <span>Facebook</span>
+            </a>
+          </li>
+          <li>
+            <a href="https://www.google.com/search?q=B%26D+Cleaning+Co+reviews" target="_blank" rel="noopener noreferrer">
+              <i class="fab fa-google"></i>
+              <span>Reviews</span>
+            </a>
+          </li>
           </a></li>
           <li><a href="https://www.google.com/search?q=B%26D+Cleaning+Co+reviews" target="_blank" rel="noopener noreferrer" class="facebook-link">
             <i class="fab fa-google"></i>
@@ -1393,22 +1532,51 @@
   <!-- Services Section -->
   <section id="services" class="container">
     <div class="services">
-      <h2>Our Services</h2>
-      <p>We provide comprehensive cleaning solutions tailored to your specific needs</p>
+      <h2>Our Professional Services</h2>
+      <p>Comprehensive cleaning solutions tailored to your specific needs</p>
       
       <div class="services-grid">
-        <div class="service-card">
-          <h3>Residential Cleaning</h3>
-          <p>Regular house cleaning, deep cleaning, move-in/move-out cleaning, and post-construction cleanup</p>
+        <div class="service-card residential">
+          <div class="service-content">
+            <h3>Residential Cleaning</h3>
+            <p>Transform your home with our professional cleaning services. From regular maintenance to deep cleaning, we ensure your living space stays spotless and comfortable.</p>
+            <a href="#quote" class="learn-more">
+              Get Quote <i class="fas fa-arrow-right"></i>
+            </a>
+          </div>
         </div>
-        <div class="service-card">
-          <h3>Commercial Cleaning</h3>
-          <p>Office cleaning, retail spaces, and industrial cleaning services</p>
+        
+        <div class="service-card commercial">
+          <div class="service-content">
+            <h3>Commercial Cleaning</h3>
+            <p>Keep your workplace pristine with our comprehensive commercial cleaning services. Perfect for offices, retail spaces, and commercial facilities.</p>
+            <a href="#quote" class="learn-more">
+              Get Quote <i class="fas fa-arrow-right"></i>
+            </a>
+          </div>
         </div>
-        <div class="service-card">
-          <h3>Specialized Services</h3>
-          <p>Carpet cleaning, window cleaning, pressure washing, and sanitization services</p>
+        
+        <div class="service-card hazardous">
+          <div class="service-content">
+            <h3>Specialized Cleaning</h3>
+            <p>Expert cleaning for challenging situations. We handle everything from deep sanitization to hazardous material cleanup with professional-grade equipment.</p>
+            <a href="#quote" class="learn-more">
+              Get Quote <i class="fas fa-arrow-right"></i>
+            </a>
+          </div>
         </div>
+        
+        <div class="service-card garden">
+          <div class="service-content">
+            <h3>Garden Maintenance</h3>
+            <p>Keep your outdoor spaces beautiful and well-maintained. Professional lawn care and garden maintenance services for a perfect curb appeal.</p>
+            <a href="#quote" class="learn-more">
+              Get Quote <i class="fas fa-arrow-right"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
         <div class="service-card">
           <h3>Garden & Lawn Maintenance</h3>
           <p>Lawn mowing, garden care, landscaping, hedge trimming, pest control, and yard cleanup services</p>
