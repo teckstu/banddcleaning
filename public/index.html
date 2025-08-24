@@ -1889,12 +1889,14 @@
       return;
     }
     if (!quoteData.service_type) {
-      responseMessage.className = 'response-message error';
-      responseMessage.textContent = 'Please select a service type';
-      responseMessage.style.display = 'block';
-      submitBtn.disabled = false;
-      submitText.textContent = 'Get My Free Quote';
-      return;
+      if (!quoteData.service_type || quoteData.service_type === "") {
+        responseMessage.className = 'response-message error';
+        responseMessage.textContent = 'Please select a service type';
+        responseMessage.style.display = 'block';
+        submitBtn.disabled = false;
+        submitText.textContent = 'Get My Free Quote';
+        return;
+      }
     }
     if (!quoteData.message || quoteData.message.length < 10) {
       responseMessage.className = 'response-message error';
