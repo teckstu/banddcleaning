@@ -28,6 +28,11 @@ const app = express();
 app.use(helmet({
   contentSecurityPolicy: {
     directives: {
+      'default-src': ["'self'"],
+      'style-src': ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com', 'https://cdnjs.cloudflare.com'],
+      'font-src': ["'self'", 'https://fonts.gstatic.com', 'https://cdnjs.cloudflare.com'],
+      'img-src': ["'self'", 'data:', 'https:'],
+      'script-src': ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
       defaultSrc: ["'self'"],
       scriptSrc: ["'self'", "'unsafe-inline'", "https://cdnjs.cloudflare.com"],
       styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://cdnjs.cloudflare.com"],
@@ -66,6 +71,49 @@ app.use(hpp());
 // CORS configuration - strict production settings
 app.use(createCorsMiddleware());
 app.use(corsSecurityMiddleware);
+
+// Form submission endpoint
+app.post('/api/submit', async (req, res) => {
+  try {
+    const { name, email, phone, serviceType, preferredDate, frequency, address, message } = req.body;
+    
+    // Basic validation
+    if (!name || !email || !serviceType || !message) {
+      return res.status(400).json({ error: 'Missing required fields' });
+    }
+
+    // Create quote record
+    const quote = new Quote({
+      name,
+      email,
+      phone,
+      serviceType,
+      preferredDate,
+      frequency,
+      address,
+      message,
+      status: 'pending',
+      createdAt: new Date()
+    });
+
+    // Save to database
+    await quote.save();
+
+    // Send email notification
+    const emailService = new QuoteService();
+    await emailService.sendQuoteNotification(quote);
+
+    res.status(200).json({ 
+      message: 'Quote request received successfully! We will contact you within 24 hours.',
+      quoteId: quote._id 
+    });
+  } catch (error) {
+    console.error('Quote submission error:', error);
+    res.status(500).json({ 
+      error: 'An error occurred while processing your request. Please try again later.' 
+    });
+  }
+});
 
 // =====================
 // DATABASE INITIALIZATION
