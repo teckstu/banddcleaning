@@ -76,6 +76,9 @@ app.use(corsSecurityMiddleware);
 // Form submission endpoint
 app.post('/api/submit', async (req, res) => {
   try {
+    // Log incoming request body for debugging
+    console.log('--- Incoming /api/submit request ---');
+    console.log('Request body:', JSON.stringify(req.body, null, 2));
     // Check if database is initialized
     if (!dbInitialized) {
       console.error('Database not initialized');
@@ -146,27 +149,28 @@ app.post('/api/submit', async (req, res) => {
         quoteId: savedQuote.id 
       });
     } catch (dbError) {
-      console.error('Database error:', dbError);
-      
+      console.error('--- Database error in /api/submit ---');
+      console.error(dbError);
+      if (dbError.stack) console.error(dbError.stack);
       if (dbError.name === 'SequelizeValidationError') {
         return res.status(400).json({ 
           error: 'Invalid data provided',
           details: dbError.errors.map(err => err.message)
         });
       }
-      
       if (dbError.name === 'SequelizeDatabaseError') {
         return res.status(500).json({ 
           error: 'Database error occurred. Please try again later.'
         });
       }
-
       res.status(500).json({ 
         error: 'An unexpected error occurred while processing your request. Please try again later.'
       });
     }
   } catch (error) {
-    console.error('Quote submission error:', error);
+    console.error('--- Fatal error in /api/submit ---');
+    console.error(error);
+    if (error.stack) console.error(error.stack);
     res.status(500).json({ 
       error: 'An error occurred while processing your request. Please try again later.'
     });
