@@ -937,6 +937,22 @@
           grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
           gap: 2rem;
           margin-top: 3rem;
+          justify-items: center;
+          justify-content: center;
+          max-width: 1400px;
+          margin-left: auto;
+          margin-right: auto;
+        }
+
+        .service-card {
+          width: 100%;
+          max-width: 400px;
+        }
+
+        @media (min-width: 1200px) {
+          .services-grid {
+            grid-template-columns: repeat(2, minmax(300px, 400px));
+          }
         }
 
         .service-card {
@@ -976,8 +992,8 @@
           background: url('./assets/special1.jpg') center/cover no-repeat;
         }
 
-        .service-card.garden {
-          background: url('./assets/sunset-lawn.jpg') center/cover no-repeat;
+        .service-card.pest-control {
+          background: url('./assets/special1.jpg') center/cover no-repeat;
         }
 
         .service-card:hover {
@@ -1566,20 +1582,14 @@
           </div>
         </div>
 
-        <div class="service-card garden">
+        <div class="service-card pest-control">
           <div class="service-content">
-            <h3>Garden Maintenance</h3>
-            <p>Keep your outdoor spaces beautiful and well-maintained. Professional lawn care and garden maintenance services for a perfect curb appeal.</p>
+            <h3>Pest Control</h3>
+            <p>Professional pest management solutions to keep your property pest-free. We use safe and effective methods for both residential and commercial spaces.</p>
             <a href="#quote" class="learn-more">
               Get Quote <i class="fas fa-arrow-right"></i>
             </a>
           </div>
-        </div>
-      </div>
-    </div>
-        <div class="service-card">
-          <h3>Garden & Lawn Maintenance</h3>
-          <p>Lawn mowing, garden care, landscaping, hedge trimming, pest control, and yard cleanup services</p>
         </div>
       </div>
     </div>
