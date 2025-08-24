@@ -993,7 +993,7 @@
         }
 
         .service-card.pest-control {
-          background: url('./assets/special1.jpg') center/cover no-repeat;
+          background: url('./assets/pestcontrol.jpg') center/cover no-repeat;
         }
 
         .service-card:hover {
@@ -1658,7 +1658,7 @@
           </div>
           <div class="form-group">
             <label for="serviceType">Service Type *</label>
-            <select id="serviceType" name="serviceType" required>
+            <select id="serviceType" name="service_type" required>
                 <option value="">Select a service...</option>
                 <optgroup label="Regular Services">
                     <option value="residential_cleaning">Residential Cleaning</option>
@@ -1683,11 +1683,11 @@
         <div class="form-row">
           <div class="form-group">
             <label for="preferredDate">Preferred Date</label>
-            <input type="date" id="preferredDate" name="preferredDate" min="" />
+            <input type="date" id="preferredDate" name="preferred_date" min="" />
           </div>
           <div class="form-group">
             <label for="frequency">Service Frequency</label>
-            <select id="frequency" name="frequency" required>
+            <select id="frequency" name="cleaning_frequency" required>
                 <option value="">Select frequency...</option>
                 <optgroup label="Regular Schedule">
                     <option value="weekly">Weekly</option>
@@ -1817,33 +1817,58 @@
     responseMessage.style.display = 'none';
 
     const form = e.target;
-
-    const formData = {
-      name: form.name.value.trim(),
-      email: form.email.value.trim(),
-      phone: form.phone.value.trim(),
-      serviceType: form.serviceType.value,
-      preferredDate: form.preferredDate.value,
-      frequency: form.frequency.value,
-      address: form.address.value.trim(),
-      message: form.message.value.trim(),
+    const formData = new FormData(form);
+    const quoteData = {
+      name: formData.get('name')?.trim(),
+      email: formData.get('email')?.trim(),
+      phone: formData.get('phone')?.trim(),
+      service_type: formData.get('service_type'),
+      preferred_date: formData.get('preferred_date'),
+      cleaning_frequency: formData.get('cleaning_frequency'),
+      address: formData.get('address')?.trim(),
+      message: formData.get('message')?.trim()
     };
 
-    // Basic client-side validation
-    if (!formData.name || !formData.email || !formData.serviceType || !formData.message) {
+    // Client-side validation
+    if (!quoteData.name || quoteData.name.length < 2) {
       responseMessage.className = 'response-message error';
-      responseMessage.textContent = 'Please fill in all required fields.';
+      responseMessage.textContent = 'Please enter a valid name (at least 2 characters)';
       responseMessage.style.display = 'block';
       submitBtn.disabled = false;
       submitText.textContent = 'Get My Free Quote';
       return;
     }
 
-    // Email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(formData.email)) {
+    if (!quoteData.email || !validateEmail(quoteData.email)) {
       responseMessage.className = 'response-message error';
-      responseMessage.textContent = 'Please enter a valid email address.';
+      responseMessage.textContent = 'Please enter a valid email address';
+      responseMessage.style.display = 'block';
+      submitBtn.disabled = false;
+      submitText.textContent = 'Get My Free Quote';
+      return;
+    }
+
+    if (!quoteData.phone || !validatePhone(quoteData.phone)) {
+      responseMessage.className = 'response-message error';
+      responseMessage.textContent = 'Please enter a valid Australian phone number';
+      responseMessage.style.display = 'block';
+      submitBtn.disabled = false;
+      submitText.textContent = 'Get My Free Quote';
+      return;
+    }
+
+    if (!quoteData.service_type) {
+      responseMessage.className = 'response-message error';
+      responseMessage.textContent = 'Please select a service type';
+      responseMessage.style.display = 'block';
+      submitBtn.disabled = false;
+      submitText.textContent = 'Get My Free Quote';
+      return;
+    }
+
+    if (!quoteData.message || quoteData.message.length < 10) {
+      responseMessage.className = 'response-message error';
+      responseMessage.textContent = 'Please provide more details about your service request (at least 10 characters)';
       responseMessage.style.display = 'block';
       submitBtn.disabled = false;
       submitText.textContent = 'Get My Free Quote';
@@ -1856,7 +1881,7 @@
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(formData)
+        body: JSON.stringify(quoteData)
       });
 
       const data = await response.json();
@@ -1868,6 +1893,9 @@
         
         // Reset minimum date
         document.getElementById('preferredDate').min = new Date().toISOString().split('T')[0];
+        
+        // Scroll the success message into view
+        responseMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
       } else {
         throw new Error(data.error || 'Something went wrong, please try again.');
       }
@@ -1875,6 +1903,9 @@
       console.error('Form submission error:', error);
       responseMessage.className = 'response-message error';
       responseMessage.textContent = error.message || 'Network error. Please check your connection and try again.';
+      
+      // Scroll the error message into view
+      responseMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
     } finally {
       responseMessage.style.display = 'block';
       submitBtn.disabled = false;
@@ -1882,7 +1913,7 @@
     }
   });
 
-  // Add form validation helpers
+  // Form validation helpers
 function validateEmail(email) {
     const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return re.test(email);
@@ -1899,43 +1930,6 @@ function validatePhone(phone) {
     
     return mobileRegex.test(cleanPhone) || landlineRegex.test(cleanPhone);
 }
-
-function showError(message) {
-    const errorDiv = document.getElementById('responseMessage');
-    errorDiv.className = 'response-message error';
-    errorDiv.textContent = message;
-    errorDiv.style.display = 'block';
-    errorDiv.scrollIntoView({ behavior: 'smooth' });
-}
-
-function showSuccess(message) {
-    const successDiv = document.getElementById('responseMessage');
-    successDiv.className = 'response-message success';
-    successDiv.textContent = message;
-    successDiv.style.display = 'block';
-    successDiv.scrollIntoView({ behavior: 'smooth' });
-}
-
-document.getElementById('quoteForm').addEventListener('submit', async function(e) {
-    e.preventDefault();
-    
-    const submitBtn = document.getElementById('submitBtn');
-    const submitText = document.getElementById('submitText');
-    const responseMessage = document.getElementById('responseMessage');
-
-    // Clear previous messages
-    responseMessage.style.display = 'none';
-
-    // Get form data
-    const formData = new FormData(this);
-    const quoteData = {
-        name: formData.get('name')?.trim(),
-        email: formData.get('email')?.trim(),
-        phone: formData.get('phone')?.trim(),
-        serviceType: formData.get('serviceType'),
-        message: formData.get('message')?.trim(),
-        preferredDate: formData.get('preferredDate')
-    };
 
     // Client-side validation
     if (!quoteData.name || quoteData.name.length < 2) {
@@ -2011,7 +2005,7 @@ document.getElementById('email').addEventListener('blur', function() {
 document.getElementById('phone').addEventListener('blur', function() {
     if (this.value && !validatePhone(this.value)) {
         this.style.borderColor = '#e74c3c';
-        this.setCustomValidity('Please enter a valid phone number');
+        this.setCustomValidity('Please enter a valid Australian phone number');
     } else {
         this.style.borderColor = '';
         this.setCustomValidity('');
