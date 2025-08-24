@@ -30,8 +30,8 @@ app.use((req, res, next) => {
     'Content-Security-Policy',
     "default-src 'self'; " +
     "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com; " +
-    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; " +
-    "style-src-elem 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com https://fonts.gstatic.com https://*.googleapis.com; " +
+    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.gstatic.com https://cdnjs.cloudflare.com; " +
+    "style-src-elem 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.gstatic.com https://cdnjs.cloudflare.com; " +
     "img-src 'self' data: https: blob:; " +
     "connect-src 'self' https://*.banddcleaning.com.au https://*.onrender.com https://www.bandcleaning-com-au.onrender.com; " +
     "font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com data: https://*.gstatic.com https://*.googleapis.com; " +
