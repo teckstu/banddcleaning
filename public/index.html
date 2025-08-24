@@ -836,14 +836,14 @@
         .cta-button {
           display: inline-flex;
           align-items: center;
-          gap: 10px;
+          gap: 12px;
           background: white;
           color: var(--purple-primary);
-          padding: 1.2rem 2.5rem;
+          padding: 1.4rem 3rem;
           text-decoration: none;
           border-radius: var(--radius-md);
           font-weight: 600;
-          font-size: 1.1rem;
+          font-size: 1.15rem;
           box-shadow: var(--shadow-md);
           transition: var(--transition);
           position: relative;
@@ -875,6 +875,40 @@
 
         .cta-button i {
           font-size: 1.2rem;
+        }
+
+        .cta-group {
+          display: flex;
+          gap: 2.5rem;
+          justify-content: center;
+          margin-top: 3.5rem;
+          flex-wrap: wrap;
+        }
+
+        @media (max-width: 768px) {
+          .cta-group {
+            gap: 1.5rem;
+            margin-top: 2.5rem;
+          }
+          
+          .cta-button {
+            padding: 1.2rem 2.5rem;
+            font-size: 1.1rem;
+          }
+        }
+
+        @media (max-width: 480px) {
+          .cta-group {
+            gap: 1rem;
+            flex-direction: column;
+            align-items: center;
+          }
+          
+          .cta-button {
+            width: 100%;
+            max-width: 300px;
+            justify-content: center;
+          }
         }
 
         /* Services Section */
@@ -1369,7 +1403,7 @@
         </div>
         <div class="service-card">
           <h3>Commercial Cleaning</h3>
-          <p>Office cleaning, retail spaces, medical facilities, and industrial cleaning services</p>
+          <p>Office cleaning, retail spaces, and industrial cleaning services</p>
         </div>
         <div class="service-card">
           <h3>Specialized Services</h3>
@@ -1377,7 +1411,7 @@
         </div>
         <div class="service-card">
           <h3>Garden & Lawn Maintenance</h3>
-          <p>Lawn mowing, garden care, landscaping, hedge trimming, and yard cleanup services</p>
+          <p>Lawn mowing, garden care, landscaping, hedge trimming, pest control, and yard cleanup services</p>
         </div>
       </div>
     </div>
