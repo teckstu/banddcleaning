@@ -98,6 +98,100 @@
           font-size: var(--text-base);
         }
 
+        .hero {
+          position: relative;
+          min-height: 100vh;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          text-align: center;
+          padding: calc(var(--header-height) + var(--space-xl)) var(--space-md);
+          background: linear-gradient(to bottom, rgba(0,0,0,0.7), rgba(0,0,0,0.4)), 
+                      url('./assets/bndbackground.jpg') center/cover no-repeat fixed;
+          color: white;
+        }
+
+        .hero-content {
+          max-width: var(--max-width);
+          margin: 0 auto;
+          padding: var(--space-xl) var(--space-md);
+          animation: fadeIn 1.2s ease-out;
+        }
+
+        .hero-logo-container {
+          margin-bottom: var(--space-xl);
+          position: relative;
+        }
+
+        .hero-logo {
+          width: clamp(200px, 30vw, 320px);
+          height: auto;
+          filter: drop-shadow(0 8px 24px rgba(0,0,0,0.2));
+          transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+          animation: floatIn 1.5s ease-out;
+        }
+
+        .hero-logo:hover {
+          transform: translateY(-10px) scale(1.02);
+        }
+
+        .hero h1 {
+          font-size: clamp(2rem, 5vw, 3.5rem);
+          font-weight: 600;
+          margin: var(--space-lg) 0;
+          line-height: 1.2;
+          text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+          animation: fadeInUp 1s ease-out 0.5s both;
+        }
+
+        .hero p {
+          font-size: clamp(1rem, 2vw, 1.25rem);
+          max-width: 800px;
+          margin: 0 auto var(--space-xl);
+          opacity: 0.9;
+          text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+          animation: fadeInUp 1s ease-out 0.7s both;
+        }
+
+        .cta-buttons {
+          display: flex;
+          gap: var(--space-md);
+          justify-content: center;
+          flex-wrap: wrap;
+          animation: fadeInUp 1s ease-out 0.9s both;
+        }
+
+        @keyframes floatIn {
+          0% {
+            opacity: 0;
+            transform: translateY(-40px);
+          }
+          100% {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        @keyframes fadeInUp {
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        @keyframes fadeIn {
+          from {
+            opacity: 0;
+          }
+          to {
+            opacity: 1;
+          }
+        }
+
         .container {
           width: var(--container-width);
           margin-inline: auto;
@@ -157,7 +251,7 @@
         .header-content {
           display: flex;
           align-items: center;
-          justify-content: space-between;
+          justify-content: flex-end;
           height: 100%;
           padding: 0 var(--space-md);
           position: relative;
@@ -166,24 +260,49 @@
           margin: 0 auto;
         }
 
-        .logo-container {
+        .hero {
+          position: relative;
+          min-height: 100vh;
+          padding-top: calc(var(--header-height) + 2rem);
+          background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.7)), url('./assets/bndbackground.jpg') center/cover no-repeat;
           display: flex;
           align-items: center;
-          gap: var(--space-md);
-          flex-shrink: 1;
-          min-width: 0;
+          text-align: center;
         }
 
-        .logo {
-          height: calc(var(--header-height) * 0.75);
-          width: auto;
-          flex-shrink: 0;
+        .hero-content {
+          position: relative;
+          z-index: 2;
+          max-width: var(--max-width);
+          margin: 0 auto;
+          padding: var(--space-lg);
         }
 
-        .logo img {
-          height: 100%;
-          width: auto;
-          object-fit: contain;
+        .hero-logo-container {
+          margin-bottom: var(--space-lg);
+          animation: fadeInDown 1s ease-out;
+        }
+
+        .hero-logo {
+          width: 280px;
+          height: auto;
+          filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+          transition: transform 0.3s ease;
+        }
+
+        .hero-logo:hover {
+          transform: scale(1.05);
+        }
+
+        @keyframes fadeInDown {
+          from {
+            opacity: 0;
+            transform: translateY(-20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
         }
 
         .award-info {
@@ -1213,12 +1332,14 @@
 <main>
   <!-- Hero Section -->
   <section class="hero">
-    <div class="container">
-      <div class="hero-content">
-        <h1>Transform Your Space<br>Professional Cleaning Solutions</h1>
-        <p class="hero-subtitle">Trusted by over 100+ households in Rutherford & the Hunter Valley</p>
-        <div class="cta-group">
-          <a href="#quote" class="cta-button primary">Request a Quote</a>
+    <div class="hero-content">
+      <div class="hero-logo-container">
+        <img src="./assets/logo.jpg" alt="B&D Cleaning Co Logo" class="hero-logo" />
+      </div>
+      <h1>Transform Your Space<br>Professional Cleaning Solutions</h1>
+      <p class="hero-subtitle">Trusted by over 100+ households in Rutherford & the Hunter Valley</p>
+      <div class="cta-group">
+        <a href="#quote" class="cta-button primary">Request a Quote</a>
           <a href="#services" class="cta-button secondary">Explore Services</a>
         </div>
         <div class="trust-indicators">
