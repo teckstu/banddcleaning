@@ -226,6 +226,76 @@
           }
         }
 
+        /* Review Popup Styles */
+        .review-popup {
+          position: fixed;
+          bottom: 20px;
+          right: 20px;
+          background: white;
+          padding: 1.5rem;
+          border-radius: 12px;
+          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+          z-index: 1000;
+          max-width: 300px;
+          transform: translateY(200%);
+          transition: transform 0.3s ease;
+          display: flex;
+          flex-direction: column;
+          gap: 1rem;
+        }
+
+        .review-popup.show {
+          transform: translateY(0);
+        }
+
+        .review-popup-header {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 1rem;
+        }
+
+        .review-popup-title {
+          font-size: var(--text-lg);
+          font-weight: 600;
+          color: var(--text-dark);
+        }
+
+        .review-popup-close {
+          background: none;
+          border: none;
+          color: var(--text-light);
+          cursor: pointer;
+          padding: 4px;
+          font-size: 1.2rem;
+        }
+
+        .review-popup-content {
+          font-size: var(--text-base);
+          color: var(--text-light);
+          line-height: 1.5;
+        }
+
+        .review-popup-button {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          gap: 0.5rem;
+          background: linear-gradient(135deg, #4285f4 0%, #34a853 100%);
+          color: white;
+          padding: 0.8rem 1.2rem;
+          border-radius: 8px;
+          text-decoration: none;
+          font-weight: 500;
+          transition: transform 0.2s ease, box-shadow 0.2s ease;
+          box-shadow: 0 2px 10px rgba(66, 133, 244, 0.2);
+        }
+
+        .review-popup-button:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 4px 15px rgba(66, 133, 244, 0.3);
+        }
+
         @media (max-width: 480px) {
           .header-content {
             padding: 0 var(--space-sm);
@@ -237,6 +307,13 @@
           
           nav a i {
             font-size: 1.2em;
+          }
+
+          .review-popup {
+            bottom: 10px;
+            right: 10px;
+            left: 10px;
+            max-width: none;
           }
         }
 
@@ -1008,7 +1085,7 @@
         <img src="./assets/logo.png" alt="B&D Cleaning Co Logo" class="logo">
         <div class="award-info">
           <img src="./assets/businessaward.png" alt="Business Award Finalist" class="award-thumbnail">
-          <span class="award-text">Lake Mac Business Excellence Awards Finalist 2023</span>
+          <span class="award-text">Lake Macquarie Business Excellence Awards Finalist 2025</span>
         </div>
       </div>
       </script>
@@ -1504,6 +1581,48 @@ document.getElementById('phone').addEventListener('blur', function() {
     }
 });
 </script>
+
+  <!-- Review Popup -->
+  <div class="review-popup" id="reviewPopup">
+    <div class="review-popup-header">
+      <div class="review-popup-title">Enjoyed our service?</div>
+      <button class="review-popup-close" onclick="closeReviewPopup()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div class="review-popup-content">
+      We'd love to hear about your experience! Your feedback helps us improve and helps others find quality cleaning services.
+    </div>
+    <a href="https://www.google.com/search?q=B%26D+Cleaning+Co+reviews#lrd=0x6b733f0f9f9f9f9f:0x1b1b1b1b1b1b1b1b,1,,," 
+       target="_blank" 
+       class="review-popup-button">
+      <i class="fab fa-google"></i>
+      Leave a Review
+    </a>
+  </div>
+
+  <script>
+    // Review popup functionality
+    function showReviewPopup() {
+      const popup = document.getElementById('reviewPopup');
+      popup.classList.add('show');
+      
+      // Store that we've shown the popup
+      localStorage.setItem('reviewPopupShown', 'true');
+    }
+
+    function closeReviewPopup() {
+      const popup = document.getElementById('reviewPopup');
+      popup.classList.remove('show');
+    }
+
+    // Show popup after 60 seconds if it hasn't been shown before
+    window.addEventListener('load', () => {
+      if (!localStorage.getItem('reviewPopupShown')) {
+        setTimeout(showReviewPopup, 60000);
+      }
+    });
+  </script>
 
 </body>
 </html>
