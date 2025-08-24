@@ -1803,8 +1803,8 @@
     });
   });
 
-  // Form submission handler
-  document.getElementById("quoteForm").addEventListener("submit", async (e) => {
+  // --- BEGIN CLEANED FORM HANDLER ---
+  document.getElementById("quoteForm").addEventListener("submit", async function(e) {
     e.preventDefault();
 
     const submitBtn = document.getElementById('submitBtn');
@@ -1838,7 +1838,6 @@
       submitText.textContent = 'Get My Free Quote';
       return;
     }
-
     if (!quoteData.email || !validateEmail(quoteData.email)) {
       responseMessage.className = 'response-message error';
       responseMessage.textContent = 'Please enter a valid email address';
@@ -1847,7 +1846,6 @@
       submitText.textContent = 'Get My Free Quote';
       return;
     }
-
     if (!quoteData.phone || !validatePhone(quoteData.phone)) {
       responseMessage.className = 'response-message error';
       responseMessage.textContent = 'Please enter a valid Australian phone number';
@@ -1856,7 +1854,6 @@
       submitText.textContent = 'Get My Free Quote';
       return;
     }
-
     if (!quoteData.service_type) {
       responseMessage.className = 'response-message error';
       responseMessage.textContent = 'Please select a service type';
@@ -1865,7 +1862,6 @@
       submitText.textContent = 'Get My Free Quote';
       return;
     }
-
     if (!quoteData.message || quoteData.message.length < 10) {
       responseMessage.className = 'response-message error';
       responseMessage.textContent = 'Please provide more details about your service request (at least 10 characters)';
@@ -1883,18 +1879,12 @@
         },
         body: JSON.stringify(quoteData)
       });
-
       const data = await response.json();
-
       if (response.ok) {
         responseMessage.className = 'response-message success';
         responseMessage.textContent = data.message || 'Your quote request has been submitted successfully! We will contact you within 24 hours.';
         form.reset();
-        
-        // Reset minimum date
         document.getElementById('preferredDate').min = new Date().toISOString().split('T')[0];
-        
-        // Scroll the success message into view
         responseMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
       } else {
         throw new Error(data.error || 'Something went wrong, please try again.');
@@ -1903,8 +1893,6 @@
       console.error('Form submission error:', error);
       responseMessage.className = 'response-message error';
       responseMessage.textContent = error.message || 'Network error. Please check your connection and try again.';
-      
-      // Scroll the error message into view
       responseMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
     } finally {
       responseMessage.style.display = 'block';
@@ -1912,22 +1900,17 @@
       submitText.textContent = 'Get My Free Quote';
     }
   });
+  // --- END CLEANED FORM HANDLER ---
 
-  // Form validation helpers
+  // Validation helpers
   function validateEmail(email) {
     const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return re.test(email);
   }
-
   function validatePhone(phone) {
-    // Remove all non-digit characters
     const cleanPhone = phone.replace(/[^\d+]/g, '');
-    
-    // Australian mobile: 04XXXXXXXX or +614XXXXXXXX
-    // Australian landline: XXXXXXXXXX (with area code)
     const mobileRegex = /^(?:\+?61|0)[4][0-9]{8}$/;
     const landlineRegex = /^(?:\+?61|0)[2378][0-9]{8}$/;
-    
     return mobileRegex.test(cleanPhone) || landlineRegex.test(cleanPhone);
   }
 
