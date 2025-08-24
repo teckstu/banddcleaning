@@ -1643,18 +1643,18 @@
         <div class="form-row">
           <div class="form-group">
             <label for="name">First and Last name</label>
-            <input type="text" id="name" name="name" required />
+            <input type="text" id="name" name="name" autocomplete="name" required />
           </div>
           <div class="form-group">
             <label for="email">Email</label>
-            <input type="email" id="email" name="email" required />
+            <input type="email" id="email" name="email" autocomplete="email" required />
           </div>
         </div>
         
         <div class="form-row">
           <div class="form-group">
             <label for="phone">Phone Number</label>
-            <input type="tel" id="phone" name="phone" />
+            <input type="tel" id="phone" name="phone" autocomplete="tel" />
           </div>
           <div class="form-group">
             <label for="serviceType">Service Type *</label>
@@ -1683,7 +1683,7 @@
         <div class="form-row">
           <div class="form-group">
             <label for="preferredDate">Preferred Date</label>
-            <input type="date" id="preferredDate" name="preferred_date" min="" />
+            <input type="date" id="preferredDate" name="preferred_date" autocomplete="off" min="" />
           </div>
           <div class="form-group">
             <label for="frequency">Service Frequency</label>
@@ -1706,7 +1706,7 @@
         
         <div class="form-group">
           <label for="address">Property Address</label>
-          <input type="text" id="address" name="address" placeholder="Street address, city, state, zip" />
+          <input type="text" id="address" name="address" placeholder="Street address, city, state, zip" autocomplete="street-address" />
         </div>
         
         <div class="form-group">
