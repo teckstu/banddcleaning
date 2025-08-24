@@ -31,13 +31,14 @@ app.use((req, res, next) => {
     "default-src 'self'; " +
     "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com; " +
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; " +
-    "style-src-elem 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com; " +
+    "style-src-elem 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com https://*.googleapis.com; " +
     "img-src 'self' data: https: blob:; " +
     "connect-src 'self' https://*.banddcleaning.com.au https://*.onrender.com; " +
-    "font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; " +
+    "font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com data: https://*.gstatic.com https://*.googleapis.com; " +
     "object-src 'none'; " +
     "media-src 'self'; " +
-    "frame-src 'self' https://www.google.com"
+    "frame-src 'self' https://www.google.com; " +
+    "base-uri 'self'"
   );
   next();
 });
@@ -45,9 +46,9 @@ app.use((req, res, next) => {
 // Other security headers
 app.use(helmet({
   contentSecurityPolicy: false, // We're handling CSP separately
-  crossOriginEmbedderPolicy: true,
+  crossOriginEmbedderPolicy: false, // Allow loading of external resources
   crossOriginOpenerPolicy: true,
-  crossOriginResourcePolicy: { policy: "same-site" },
+  crossOriginResourcePolicy: { policy: "cross-origin" }, // Allow cross-origin resources
   dnsPrefetchControl: true,
   frameguard: { action: "deny" },
   hsts: { maxAge: 31536000, includeSubDomains: true, preload: true },
