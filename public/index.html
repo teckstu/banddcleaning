@@ -31,6 +31,22 @@
           
           /* Layout */
           --header-height: 80px;
+          --max-width: 1200px;
+          
+          /* Spacing */
+          --space-xs: 0.5rem;
+          --space-sm: 1rem;
+          --space-md: 1.5rem;
+          --space-lg: 2rem;
+          
+          /* Typography */
+          --text-xs: 0.75rem;
+          --text-sm: 0.875rem;
+          --text-md: 1rem;
+          --text-lg: 1.125rem;
+          
+          /* Layout */
+          --header-height: 80px;
           --max-width: 1400px;
           --min-width: 320px;
           --content-padding: max(1rem, calc((100vw - var(--max-width)) / 2));
@@ -122,7 +138,7 @@
           top: 0;
           left: 0;
           right: 0;
-          height: 80px;
+          height: var(--header-height);
           background: url('./assets/bndbackground.jpg') center/cover no-repeat;
           z-index: 1000;
         }
@@ -141,48 +157,136 @@
         .header-content {
           display: flex;
           align-items: center;
+          justify-content: space-between;
           height: 100%;
-          padding: 0 2rem;
+          padding: 0 var(--space-md);
           position: relative;
           z-index: 2;
-          max-width: 1200px;
+          max-width: var(--max-width);
           margin: 0 auto;
         }
 
         .logo-container {
           display: flex;
           align-items: center;
-          gap: 1.5rem;
+          gap: var(--space-md);
+          flex-shrink: 1;
+          min-width: 0;
         }
 
         .logo {
-          height: 60px;
+          height: calc(var(--header-height) * 0.75);
           width: auto;
+          flex-shrink: 0;
         }
 
         .logo img {
           height: 100%;
           width: auto;
+          object-fit: contain;
         }
 
         .award-info {
           display: flex;
           align-items: center;
-          gap: 1rem;
+          gap: var(--space-sm);
+          flex-shrink: 1;
+          min-width: 0;
         }
 
         .award-thumbnail {
-          height: 50px;
+          height: calc(var(--header-height) * 0.6);
           width: auto;
+          flex-shrink: 0;
         }
 
         .award-text {
           color: white;
-          font-size: 0.9rem;
+          font-size: var(--text-sm);
           font-weight: 500;
           letter-spacing: 0.02em;
           line-height: 1.4;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
           text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        nav {
+          margin-left: var(--space-md);
+        }
+
+        nav ul {
+          display: flex;
+          align-items: center;
+          gap: var(--space-md);
+          list-style: none;
+          padding: 0;
+          margin: 0;
+        }
+
+        nav a {
+          color: white;
+          text-decoration: none;
+          font-weight: 500;
+          display: flex;
+          align-items: center;
+          gap: var(--space-xs);
+          white-space: nowrap;
+        }
+
+        @media (max-width: 1024px) {
+          :root {
+            --header-height: 70px;
+          }
+
+          .header-content {
+            padding: 0 var(--space-sm);
+          }
+
+          nav ul {
+            gap: var(--space-sm);
+          }
+        }
+
+        @media (max-width: 768px) {
+          :root {
+            --header-height: 60px;
+          }
+
+          .logo {
+            height: calc(var(--header-height) * 0.8);
+          }
+
+          .award-thumbnail {
+            height: calc(var(--header-height) * 0.65);
+          }
+
+          .award-text {
+            display: none;
+          }
+
+          nav ul {
+            gap: var(--space-xs);
+          }
+        }
+
+        @media (max-width: 480px) {
+          .header-content {
+            padding: 0 var(--space-xs);
+          }
+
+          .logo-container {
+            gap: var(--space-xs);
+          }
+
+          nav a span {
+            display: none;
+          }
+
+          nav a i {
+            font-size: 1.2em;
+          }
         }
 
         nav {
