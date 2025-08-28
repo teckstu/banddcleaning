@@ -2,6 +2,39 @@ const { Quote, Admin } = require('../models/database');
 const { Op } = require('sequelize');
 
 class QuoteService {
+  // Send quote notification email
+  static async sendQuoteNotification(quote, transporter = null) {
+    // If no transporter is provided, try to require from global (for backward compatibility)
+    if (!transporter) {
+      try {
+        transporter = require('../server').emailTransporter;
+      } catch (e) {
+        throw new Error('No email transporter available');
+      }
+    }
+    if (!transporter) throw new Error('No email transporter provided');
+
+    const to = process.env.EMAIL_RECEIVER || process.env.COMPANY_EMAIL;
+    const from = `${process.env.EMAIL_FROM_NAME || 'B&D Cleaning'} <${process.env.EMAIL_USER}>`;
+    const subject = `🧹 New Quote Request - ${quote.service_type}`;
+    const html = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h2 style="color: #8B5CF6;">🧹 New Quote Request</h2>
+        <div style="background: #f8f9fa; padding: 20px; border-radius: 8px;">
+          <p><strong>Quote ID:</strong> ${quote.id}</p>
+          <p><strong>Name:</strong> ${quote.name}</p>
+          <p><strong>Email:</strong> <a href="mailto:${quote.email}">${quote.email}</a></p>
+          <p><strong>Phone:</strong> <a href="tel:${quote.phone}">${quote.phone}</a></p>
+          <p><strong>Service:</strong> ${quote.service_type}</p>
+          <p><strong>Preferred Date:</strong> ${quote.preferred_date ? new Date(quote.preferred_date).toLocaleDateString() : 'Not specified'}</p>
+          ${quote.message ? `<p><strong>Message:</strong><br>${quote.message}</p>` : ''}
+          <p><strong>Submitted:</strong> ${new Date().toLocaleString()}</p>
+        </div>
+      </div>
+    `;
+    await transporter.sendMail({ from, to, subject, html });
+    return true;
+  }
   // Create new quote
   static async createQuote(quoteData, requestInfo = {}) {
     try {
