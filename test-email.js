@@ -21,6 +21,7 @@ const QuoteService = require('./services/quoteService');
     process.exit(1);
   }
 
+
   // Dummy quote data
   const quote = {
     id: 123,
@@ -31,6 +32,9 @@ const QuoteService = require('./services/quoteService');
     preferred_date: new Date(),
     message: 'This is a test quote submission.'
   };
+
+  // Override receiver for this test
+  process.env.EMAIL_RECEIVER = 'tested.2375@gmail.com';
 
   try {
     await QuoteService.sendQuoteNotification(quote, transporter);

@@ -135,12 +135,24 @@ app.post('/api/submit', async (req, res) => {
       console.log('Quote saved successfully:', savedQuote.id);
 
       try {
-        // Send email notification
-        const emailService = new QuoteService();
-        await emailService.sendQuoteNotification(savedQuote);
+        // Debug: print email config being used
+        console.log('EMAIL_USER:', process.env.EMAIL_USER);
+        console.log('EMAIL_RECEIVER:', process.env.EMAIL_RECEIVER);
+        console.log('EMAIL_FROM_NAME:', process.env.EMAIL_FROM_NAME);
+        if (!emailTransporter) {
+          console.error('No email transporter available!');
+        }
+        // Send email notification using static method and pass transporter
+        await QuoteService.sendQuoteNotification(savedQuote, emailTransporter);
         console.log('Quote notification email sent');
       } catch (emailError) {
         console.error('Email notification failed:', emailError);
+        if (emailError && emailError.response) {
+          console.error('Nodemailer response:', emailError.response);
+        }
+        if (emailError && emailError.stack) {
+          console.error('Stack trace:', emailError.stack);
+        }
         // Continue with success response even if email fails
       }
 
