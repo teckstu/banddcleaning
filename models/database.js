@@ -197,11 +197,11 @@ const initializeDatabase = async () => {
     }
 
     const existingAdmin = await Admin.findOne({ where: { email: adminEmail } });
-    
+
     if (!existingAdmin) {
       console.log('Creating default admin account...');
       const passwordHash = await bcrypt.hash(adminPassword, parseInt(process.env.BCRYPT_ROUNDS || '12'));
-      
+
       await Admin.create({
         email: adminEmail,
         password_hash: passwordHash,
@@ -209,8 +209,19 @@ const initializeDatabase = async () => {
         role: 'admin',
         is_active: true
       });
-      
+
       console.log('✅ Default admin account created');
+    } else {
+      // Update existing admin password and ensure account is active/unlocked
+      const passwordHash = await bcrypt.hash(adminPassword, parseInt(process.env.BCRYPT_ROUNDS || '12'));
+      await existingAdmin.update({
+        password_hash: passwordHash,
+        name: adminName || existingAdmin.name,
+        is_active: true,
+        login_attempts: 0,
+        locked_until: null
+      });
+      console.log('✅ Default admin account credentials updated');
     }
     
     console.log('✅ Database models synchronized');
