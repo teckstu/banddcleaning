@@ -427,9 +427,6 @@
                 console.error('Logout error:', error);
                 window.location.href = '/login.html';
             });
-            currentToken = null;
-            showLoginForm();
-            showMessage('Logged out successfully', 'info');
         }
 
         function showLoginForm() {
@@ -496,11 +493,6 @@
 
         // Quote Management Functions
         async function loadQuotes() {
-            if (!currentToken) {
-                logout();
-                return;
-            }
-            
             try {
                 showLoading(true);
                 console.log('Loading quotes with token...');
@@ -664,7 +656,7 @@
         // Action Functions
         function contactCustomer(email, phone, name) {
             const subject = encodeURIComponent(`Re: Your Cleaning Service Quote Request`);
-            const body = encodeURIComponent(`Hi ${name},\n\nThank you for your quote request with B&D Cleaning Co. We'd be happy to provide you with a customized quote for your cleaning needs.\n\nCould we schedule a brief call to discuss your requirements in more detail?\n\nBest regards,\nB&D Cleaning Co\nPhone: ${process.env.COMPANY_PHONE || '0448 637 041'}`);
+            const body = encodeURIComponent(`Hi ${name},\n\nThank you for your quote request with B&D Cleaning Co. We'd be happy to provide you with a customized quote for your cleaning needs.\n\nCould we schedule a brief call to discuss your requirements in more detail?\n\nBest regards,\nB&D Cleaning Co\nPhone: 0448 637 041`);
             
             const mailtoLink = `mailto:${email}?subject=${subject}&body=${body}`;
             window.open(mailtoLink);
@@ -754,7 +746,7 @@
 
         // Auto-refresh quotes every 30 seconds
         setInterval(() => {
-            if (currentToken && document.getElementById('adminSection').style.display !== 'none') {
+            if (document.getElementById('adminSection').style.display !== 'none') {
                 loadQuotes();
             }
         }, 30000);

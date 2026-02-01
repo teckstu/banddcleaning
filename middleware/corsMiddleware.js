@@ -23,25 +23,20 @@ const createCorsMiddleware = () => {
 
       // Check against allowed origins
       const isAllowed = config.origins.includes(origin);
-      
+
       console.log(`🔍 CORS Request received:
         - Origin: ${origin}
         - Allowed: ${isAllowed ? 'Yes' : 'No'}
         - Available Origins: ${config.origins.join(', ')}`);
-      
+
       if (isAllowed) {
         console.log('✅ CORS: Request allowed from authorized domain');
         return callback(null, true);
       }
-      
+
       console.warn('❌ CORS: Request blocked - unauthorized origin');
       return callback(new Error('CORS policy: Origin not allowed'), false);
     },
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
-    exposedHeaders: ['Content-Range', 'X-Content-Range'],
-    maxAge: parseInt(process.env.CORS_MAX_AGE || '86400'),
     credentials: config.credentials,
     methods: config.methods,
     allowedHeaders: config.allowedHeaders,

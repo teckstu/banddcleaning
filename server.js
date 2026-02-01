@@ -85,15 +85,14 @@ app.post('/api/submit', async (req, res) => {
       return res.status(503).json({ error: 'Service temporarily unavailable. Please try again in a few moments.' });
     }
 
-    const { 
-      name, 
-      email, 
-      phone, 
-      service_type, 
-      preferred_date, 
-      cleaning_frequency, 
-      address, 
-      message 
+    const {
+      name,
+      email,
+      phone,
+      service_type,
+      preferred_date,
+      cleaning_frequency,
+      message
     } = req.body;
 
     console.log('Received form data:', req.body); // Debug log
@@ -123,10 +122,10 @@ app.post('/api/submit', async (req, res) => {
       service_type,
       preferred_date,
       cleaning_frequency,
-      address,
       message,
-      status: 'pending',
-      created_at: new Date()
+      status: 'new',
+      ip_address: req.ip,
+      user_agent: req.get('User-Agent')
     });
 
     try {
@@ -235,56 +234,9 @@ if (missingVars.length > 0) {
   process.exit(1);
 }
 
-// =====================
-// SECURITY MIDDLEWARE
 // ================
-app.use(helmet({
-  contentSecurityPolicy: process.env.NODE_ENV === 'production' ? {
-    directives: {
-      defaultSrc: ["'self'"],
-      styleSrc: ["'self'", "'unsafe-inline'"],
-      scriptSrc: ["'self'"],
-      scriptSrcAttr: ["'none'"],
-      imgSrc: ["'self'", "data:", "https:"],
-      connectSrc: ["'self'"],
-      fontSrc: ["'self'"],
-      objectSrc: ["'none'"],
-      mediaSrc: ["'self'"],
-      frameSrc: ["'none'"],
-    },
-  } : {
-    directives: {
-      defaultSrc: ["'self'"],
-      styleSrc: ["'self'", "'unsafe-inline'"],
-      scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
-      scriptSrcElem: ["'self'", "'unsafe-inline'"],
-      scriptSrcAttr: ["'unsafe-inline'"],
-      imgSrc: ["'self'", "data:", "https:"],
-      connectSrc: ["'self'"],
-      fontSrc: ["'self'"],
-      objectSrc: ["'none'"],
-      mediaSrc: ["'self'"],
-      frameSrc: ["'none'"],
-    },
-  },
-  crossOriginEmbedderPolicy: false
-}));
-
-app.use(compression());
-app.use(express.json({ limit: '1mb' }));
-app.use(express.urlencoded({ extended: true, limit: '1mb' }));
-app.use(cookieParser());
-app.use(mongoSanitize());
-app.use(xss());
-app.use(hpp());
-
+// CORS LOGGING
 // ================
-// CORS CONFIGURATION
-// ================
-const corsMiddleware = createCorsMiddleware();
-app.use(corsMiddleware);
-app.use(corsSecurityMiddleware);
-
 const isProduction = process.env.NODE_ENV === 'production';
 const corsConfig = require('./config/corsConfig');
 const currentConfig = isProduction ? corsConfig.production : corsConfig.development;
@@ -298,21 +250,19 @@ console.log('🔒 Methods allowed:', currentConfig.methods);
 
 app.use((req, res, next) => {
   const origin = req.get('Origin');
-  
-  
+
   if (origin) {
-    console.log('� Cross-Origin Request:');
+    console.log('🔍 Cross-Origin Request:');
     console.log('  Origin:', origin);
     console.log('  Path:', req.path);
     console.log('  Method:', req.method);
     console.log('  Timestamp:', new Date().toISOString());
-    
-    
-    if (!allowedOrigins.includes(origin)) {
+
+    if (!currentConfig.origins.includes(origin)) {
       console.warn('⚠️ Note: This origin would normally be blocked');
     }
   }
-  
+
   next();
 });
 
@@ -420,10 +370,8 @@ const verifyToken = (token) => {
 // ================
 const authenticate = (req, res, next) => {
   console.log('🔐 Authentication check for:', req.path);
-  
-  const token = req.cookies?.token;
-  console.log('Cookies:', req.cookies);
-  console.log('Authorization header:', req.headers.authorization);
+
+  const token = req.cookies?.jwt;
   console.log('Token found:', token ? 'Yes' : 'No');
   
   if (!token) {
@@ -545,8 +493,8 @@ app.get('/favicon.ico', (req, res) => {
   return res.end(fallbackIcon);
 });
 
-// Debug route to check what files exist (remove after testing)
-app.get('/debug/files', (req, res) => {
+// Debug route to check what files exist (auth-protected)
+app.get('/debug/files', authenticateAdmin, (req, res) => {
   const publicPath = path.join(__dirname, 'public');
   try {
     const files = fs.readdirSync(publicPath);
@@ -567,88 +515,6 @@ app.get('/debug/files', (req, res) => {
       publicPath,
       __dirname
     });
-  }
-});
-
-// Admin login endpoint - updated for database
-app.post('/api/auth/login', async (req, res) => {
-  try {
-    const { email, password } = req.body;
-    
-    console.log('Login attempt for:', email);
-    
-    if (!email || !password) {
-      return res.status(400).json({ error: 'Email and password required' });
-    }
-    
-    // Find admin in database
-    const admin = await Admin.findOne({ 
-      where: { 
-        email: email.toLowerCase(),
-        is_active: true 
-      } 
-    });
-    
-    if (!admin) {
-      console.log('Admin not found');
-      return res.status(401).json({ error: 'Invalid credentials' });
-    }
-
-    // Check if account is locked
-    if (admin.locked_until && admin.locked_until > new Date()) {
-      return res.status(423).json({ error: 'Account temporarily locked' });
-    }
-    
-    console.log('Checking password against hash');
-    const isValidPassword = await bcrypt.compare(password, admin.password_hash);
-    
-    if (!isValidPassword) {
-      // Increment login attempts
-      await admin.update({
-        login_attempts: admin.login_attempts + 1,
-        locked_until: admin.login_attempts >= 4 ? 
-          new Date(Date.now() + 15 * 60 * 1000) : null // Lock for 15 minutes after 5 attempts
-      });
-      
-      console.log('Invalid password');
-      return res.status(401).json({ error: 'Invalid credentials' });
-    }
-    
-    const token = createToken({
-      id: admin.id,
-      email: admin.email,
-      role: admin.role
-    });
-    
-    // Update login info
-    await admin.update({
-      last_login: new Date(),
-      login_attempts: 0,
-      locked_until: null
-    });
-    
-    res.cookie('jwt', token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-      maxAge: 3600000
-    });
-    
-    console.log('Login successful for:', email);
-    res.json({
-      success: true,
-      message: 'Login successful',
-      user: {
-        id: admin.id,
-        email: admin.email,
-        name: admin.name,
-        role: admin.role
-      }
-    });
-    
-  } catch (error) {
-    console.error('Login error:', error);
-    res.status(500).json({ error: 'Login failed' });
   }
 });
 
@@ -686,7 +552,7 @@ app.post('/api/quotes', async (req, res) => {
 
     // Create quote with correct field mapping
     const quote = await Quote.create({
-      id: require('uuid').v4(),
+      id: uuidv4(),
       name: name.trim(),
       email: email.trim().toLowerCase(),
       phone: phone?.trim() || '',
@@ -738,15 +604,14 @@ app.post('/api/quotes', async (req, res) => {
 
   } catch (error) {
     console.error('❌ Quote submission error:', error);
-    res.status(500).json({ 
-      error: 'Failed to submit quote request. Please try again.',
-      details: undefined
+    res.status(500).json({
+      error: 'Failed to submit quote request. Please try again.'
     });
   }
 });
 
 // Admin routes - updated for database
-app.get('/api/admin/quotes', authenticate, async (req, res) => {
+app.get('/api/admin/quotes', authenticateAdmin, async (req, res) => {
   try {
     const {
       page = 1,
@@ -780,7 +645,7 @@ app.get('/api/admin/quotes', authenticate, async (req, res) => {
 });
 
 // Get single quote
-app.get('/api/admin/quotes/:id', authenticate, async (req, res) => {
+app.get('/api/admin/quotes/:id', authenticateAdmin, async (req, res) => {
   try {
     const quote = await QuoteService.getQuoteById(req.params.id);
     res.json({ quote });
@@ -791,7 +656,7 @@ app.get('/api/admin/quotes/:id', authenticate, async (req, res) => {
 });
 
 // Update quote
-app.put('/api/admin/quotes/:id', authenticate, async (req, res) => {
+app.put('/api/admin/quotes/:id', authenticateAdmin, async (req, res) => {
   try {
     const { status, quote_amount, notes } = req.body;
     
@@ -809,7 +674,7 @@ app.put('/api/admin/quotes/:id', authenticate, async (req, res) => {
 });
 
 // Delete quote
-app.delete('/api/admin/quotes/:id', authenticate, async (req, res) => {
+app.delete('/api/admin/quotes/:id', authenticateAdmin, async (req, res) => {
   try {
     await QuoteService.deleteQuote(req.params.id);
     res.json({ success: true, message: 'Quote deleted successfully' });
@@ -820,7 +685,7 @@ app.delete('/api/admin/quotes/:id', authenticate, async (req, res) => {
 });
 
 // Get quote statistics
-app.get('/api/admin/stats', authenticate, async (req, res) => {
+app.get('/api/admin/stats', authenticateAdmin, async (req, res) => {
   try {
     const stats = await QuoteService.getQuoteStats();
     res.json(stats);
@@ -885,7 +750,9 @@ app.post('/api/admin/login', async (req, res) => {
       sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax',
       maxAge: 3600000,
       path: '/'
-    });    res.json({
+    });
+
+    res.json({
       success: true,
       admin: {
         id: admin.id,
@@ -898,133 +765,6 @@ app.post('/api/admin/login', async (req, res) => {
   } catch (error) {
     console.error('❌ Admin login error:', error);
     res.status(500).json({ error: 'Login failed. Please try again.' });
-  }
-});
-
-// Get All Quotes (Admin Only)
-app.get('/api/admin/quotes', authenticateAdmin, async (req, res) => {
-  try {
-    console.log('📋 Admin fetching quotes:', req.admin.email);
-    
-    const quotes = await Quote.findAll({
-      order: [['created_at', 'DESC']],
-      limit: 100 // Limit for performance
-    });
-
-    console.log(`✅ Retrieved ${quotes.length} quotes`);
-
-    res.json({
-      success: true,
-      quotes: quotes,
-      count: quotes.length
-    });
-
-  } catch (error) {
-    console.error('❌ Error fetching quotes:', error);
-    res.status(500).json({ error: 'Failed to fetch quotes' });
-  }
-});
-
-// Update Quote Status (Admin Only)
-app.put('/api/admin/quotes/:id', authenticateAdmin, async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { status } = req.body;
-    
-    console.log('📝 Updating quote status:', id, 'to', status);
-    
-    if (!status) {
-      return res.status(400).json({ error: 'Status is required' });
-    }
-
-    const validStatuses = ['new', 'contacted', 'quoted', 'completed', 'cancelled'];
-    if (!validStatuses.includes(status)) {
-      return res.status(400).json({ error: 'Invalid status' });
-    }
-
-    const quote = await Quote.findByPk(id);
-    if (!quote) {
-      return res.status(404).json({ error: 'Quote not found' });
-    }
-
-    await quote.update({ status });
-    
-    console.log('✅ Quote status updated successfully');
-
-    res.json({
-      success: true,
-      quote: quote
-    });
-
-  } catch (error) {
-    console.error('❌ Error updating quote status:', error);
-    res.status(500).json({ error: 'Failed to update quote status' });
-  }
-});
-
-// Delete Quote (Admin Only)
-app.delete('/api/admin/quotes/:id', authenticateAdmin, async (req, res) => {
-  try {
-    const { id } = req.params;
-    
-    console.log('🗑️ Deleting quote:', id);
-    
-    const quote = await Quote.findByPk(id);
-    if (!quote) {
-      return res.status(404).json({ error: 'Quote not found' });
-    }
-
-    await quote.destroy();
-    
-    console.log('✅ Quote deleted successfully');
-
-    res.json({
-      success: true,
-      message: 'Quote deleted successfully'
-    });
-
-  } catch (error) {
-    console.error('❌ Error deleting quote:', error);
-    res.status(500).json({ error: 'Failed to delete quote' });
-  }
-});
-
-// Admin Dashboard Stats
-app.get('/api/admin/stats', authenticateAdmin, async (req, res) => {
-  try {
-    console.log('📊 Admin fetching stats:', req.admin.email);
-    
-    const totalQuotes = await Quote.count();
-    const newQuotes = await Quote.count({ where: { status: 'new' } });
-    const contactedQuotes = await Quote.count({ where: { status: 'contacted' } });
-    const completedQuotes = await Quote.count({ where: { status: 'completed' } });
-    
-    // Get quotes from last 7 days
-    const weekAgo = new Date();
-    weekAgo.setDate(weekAgo.getDate() - 7);
-    
-    const recentQuotes = await Quote.count({
-      where: {
-        created_at: {
-          [require('sequelize').Op.gte]: weekAgo
-        }
-      }
-    });
-
-    res.json({
-      success: true,
-      stats: {
-        totalQuotes,
-        newQuotes,
-        contactedQuotes,
-        completedQuotes,
-        recentQuotes
-      }
-    });
-
-  } catch (error) {
-    console.error('❌ Error fetching stats:', error);
-    res.status(500).json({ error: 'Failed to fetch stats' });
   }
 });
 
@@ -1081,7 +821,7 @@ app.get('/login', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'login.html'));
 });
 
-app.get('/admin', authenticate, (req, res) => {
+app.get('/admin', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'admin.html'));
 });
 
